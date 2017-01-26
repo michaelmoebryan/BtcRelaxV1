@@ -1,0 +1,288 @@
+<?php
+
+//namespace BtcRelax;
+
+session_start();
+
+require_once dirname(__FILE__) . "/bitid/config.php";
+require_once dirname(__FILE__) . "/bitid/BitID.php";
+require_once dirname(__FILE__) . "/bitid/DAO.php";
+require_once dirname(__FILE__) . "/functions.inc.php"; 
+$bitid = new BitID();
+
+// generate a nonce
+$nonce = $bitid->generateNonce();
+// build uri with nonce, nonce is optional, but we pre-calculate it to avoid extracting it later
+$bitid_uri = $bitid->buildURI(SERVER_URL . 'callback.php', $nonce);
+
+// Insert nonce + IP in the database to avoid an attacker go and try several nonces
+// This will only allow one nonce per IP, but it could be easily modified to allow severals per IP
+// (this is deleted after an user successfully log in the system, so only will collide if two or more users try to log in at the same time)
+$dao = new DAO();
+$result = $dao->insert($nonce, @$_SERVER['REMOTE_ADDR']);
+if(!$result)
+{
+	echo "<pre>";
+	echo "Database failer\n";
+	var_dump($dao);
+	die();
+}
+?>
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Windows (vers 25 March 2009), see www.w3.org">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1"><!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet" type=
+  "text/css"><!-- Custom styles for this template -->
+  <link href=
+  "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+  rel="stylesheet" type="text/css">
+  <link href="css/styles.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="css/show_message.css">
+  <script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="js/show_message.js" type="text/javascript"></script>
+  
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+				<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+				<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+				<![endif]-->
+
+  <script type="text/javascript">
+var currLang = 'ru';
+  </script>
+
+  <title>XSpace from Chronos</title>
+</head>
+
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top" role=
+  "navigation">      
+	<div class="navbar-header">
+		<a class="navbar-brand" href="http://bitrelax.jimdo.com"><img src="/img/BtcRelax64.gif" alt="BtcRelax project"></a>
+		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+		<i class="fa fa-bars"></i>
+		<span class="sr-only">Toggle navigation</span>
+		</button> 
+	  </div>
+	<div class="container">
+
+
+	  <?php if ($_SESSION['user_id'] !== NULL)
+			{
+			
+				
+				if ($_SESSION['cust_id'] !== NULL)
+					{ ?>
+							  <div class="collapse navbar-collapse">
+								<ul class="nav navbar-nav">
+								  <li class="active"><a href="#">Ветрина</a></li>
+								  <li><a href="killSession.php">Да ну нах, меня здесь небыло!</a></li>              
+								</ul>
+							  </div>					  
+						
+				<?php 	}
+					else
+					{
+				?>
+							  <div class="collapse navbar-collapse">
+								<ul class="nav navbar-nav">
+								  <li class="active"><a href="#">Главная</a></li>
+								  <li><a href="killSession.php">Да ну нах, меня здесь небыло!</a></li>	          
+								</ul>
+							  </div>
+				<?php 
+					}
+			}
+			else
+			{
+				?>
+					  <div class="collapse navbar-collapse">
+						<ul class="nav navbar-nav">
+						  <li class="active"><a href="#">CopoBan</a></li>                          
+						</ul>
+					  </div>                        
+				<?php
+			}        
+		?>
+	</div>
+  </div>
+
+  <div class="container">
+	<div class="starter-template">
+	  <h1 style=
+	  "font-family: museo-slab, Georgia, 'Times New Roman', Times, serif; font-weight: 500; text-shadow: 4px 3px 0px #1d9d74, 9px 8px 0px rgba(0, 0, 0, 0.15);">
+	  CopoBan control !</h1>
+
+	  <?php  if ($_SESSION['user_id'] !== NULL)
+			{
+           echo ('<div id="lhc_status_container_page" ></div>');
+				if ($_SESSION['cust_id'] !== NULL)
+				{ ?>
+					<!--<a target="_blank" href="<?php echo  generateAutoLoginLink(array('r' => 'chat/chattabs', 'u' => 1, 'l' => 'Chronos', /* 't' => time() + 50000 */ 'secret_hash' => 'GodOfTime$Admin'))?>">Start to chat!</a> -->                   
+					<h2>Вот тут и начнётся самое масло</h2>
+					<script type="text/javascript">
+							var LHCChatOptions = {};
+							LHCChatOptions.opt = {widget_height:140,widget_width:250,popup_height:220,popup_width:300,domain:'fastfen.club'};
+							LHCChatOptions.attr_online = new Array();
+							LHCChatOptions.attr_online.push({'name':'username','value':'<?php echo $_SESSION['user_id'] ?>'});     
+							(function() {
+							var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+							var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
+							var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
+							po.src = '//fastfen.club/helper/index.php/site_admin/chat/getstatus/(click)/internal/(position)/bottom_left/(ma)/br/(hide_offline)/true/(check_operator_messages)/true/(top)/350/(units)/pixels/(theme)/1?r='+referrer+'&l='+location;
+							var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+							})();
+						</script>   
+				<?php }
+				else
+				{
+				?>
+				<h3>Your access code is: <?php echo ($_SESSION['user_id']); ?> </h3>
+
+
+
+	
+						<!-- Place this tag after the Live Helper Plugin tag. -->
+						<script type="text/javascript">
+						var LHCChatOptionsPage = {};
+						LHCChatOptionsPage.opt = {nick:'<?php ($_SESSION['user_id']); ?>',disable_nick_change:true};
+	   
+						(function() {
+						var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+						po.src = '//fastfen.club/helper/index.php/rus/chat/getstatusembed/(leaveamessage)/true/(department)/1';
+						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+						})();
+					</script>
+										
+										
+<!--                    <div id="lhc_chatbox_embed_container" ></div>
+					<script type="text/javascript">
+
+					var LHCChatboxOptionsEmbed = {hashchatbox:'empty',identifier:'<?php ($_SESSION['user_id']); ?>',nick:'Аноним',disable_nick_change:true};
+					 LHCChatboxOptionsEmbed.attr_online = new Array();
+					 LHCChatboxOptionsEmbed.attr_online.push({'name':'username','value':'<?php echo $_SESSION['user_id'] ?>'});     
+					
+					(function() {
+						var po = document.createElement('script'); po.type = 'text/javascript';
+						po.async = true;
+						po.src = '//fastfen.club/helper/index.php/chatbox/embed/(chat_height)/220';
+						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+					})();
+					</script>-->
+					
+			   <div id="dialog-message" class="modalDialog" style="display: none;">
+				<div id="1">
+					<h2>Приветствую тебя аноним! </h2>
+					<p>Поскольку я тебя не знаю, прежде чем попасть на ресурс, тебе нужно пройти собеседование с богом Хроносом.</p>
+					<p>Будь внимателен. А если его даже сейчас нет онлайн, то пиши ему сообщение обдумано. Ведь это бог времени, и если он ощутит что ты его время тратишь зря, он отберёт вдвойне ......</p>        
+					<button id="closeMessage" class="btn_msg" onclick="CloseMessage();">Ок, я ж уже догнал !</button>
+				</div>
+			   </div>
+			   <script type=text/javascript>
+				$(function() {
+							ShowServerMessage();
+				}
+				);      
+			   </script>        
+		<?php 
+				}
+			}
+			else
+			{?>
+				  <div id="newOrderLayerId" class="visibleDiv affix-top">
+			<!--        <form name="newOrder" id="newOrderId" method="post"
+					enctype="multipart/form-data" action="regOrder.php" target=
+					"_self" class="form-inline">
+					  <div class="input-group margin-bottom-sm">
+						<input class="form-control" type="email" name="email"
+						required="" id="exampleInputEmail1" placeholder=
+						"Enter email"> <input type="hidden" name="langCode"
+						value="ru">
+					  </div><button id="newOrderButton" type="submit" class=
+					  "btn btn-default">Заказать!</button>          
+					</form>   -->
+
+					
+					<a href="<?php echo $bitid_uri; ?>">
+					<img  class="loginQr" alt="Click on QRcode to activate compatible desktop wallet" border="0" 
+						src="<?php echo $bitid->qrCode($bitid_uri); ?>" />
+					</a>
+					</div>
+					<script type="text/javascript">
+							setInterval(function() {
+							var r = new XMLHttpRequest();
+							r.open("POST", "<?php echo SERVER_URL; ?>ajax.php", true);
+							r.onreadystatechange = function () {
+								if (r.readyState != 4 || r.status != 200) return;
+								if(r.responseText!='false') {
+									window.location = '<?php echo SERVER_URL; ?>user.php';
+								}
+							};
+							r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+							r.send("nonce=<?php echo $nonce; ?>");
+						}, 30000);
+					</script>
+		<?php
+			}
+		?>
+	  </div>
+	</div>
+  </div>
+  
+<!--<script type="text/javascript">
+var LHCChatOptions = {};
+LHCChatOptions.opt = {widget_height:340,widget_width:300,popup_height:520,popup_width:500,domain:'fastfen.club'};
+(function() {
+var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+var referrer = (document.referrer) ? encodeURIComponent(document.referrer.substr(document.referrer.indexOf('://')+1)) : '';
+var location  = (document.location) ? encodeURIComponent(window.location.href.substring(window.location.protocol.length)) : '';
+po.src = '//fastfen.club/helper/index.php/rus/chat/getstatus/(click)/internal/(position)/bottom_right/(ma)/br/(check_operator_messages)/true/(top)/350/(units)/pixels/(leaveamessage)/true?r='+referrer+'&l='+location;
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+})();
+</script>    -->
+
+
+	
+
+	<script type="text/javascript">
+	var LHCChatOptions = {};
+	LHCChatOptions.attr = new Array();
+	LHCChatOptions.attr.push({'name'false,'value':'','type':'hidden','size':12,'show':'off'});
+	LHCChatOptions.attr_prefill = new Array();
+	LHCChatOptions.attr_prefill.push({'name':'email','value':'','hidden':true});
+
+	LHCChatOptions.attr_prefill.push({'name':'username','value':'Username here'});
+	LHCChatOptions.attr_prefill.push({'name':'question','value':'Default user message'});
+
+	// Prefill fields which were generated from back office
+	LHCChatOptions.attr_prefill_admin = new Array();
+	LHCChatOptions.attr_prefill_admin.push({'index':'0','value':'remdex@gmail.com'});
+
+	LHCChatOptions.opt = {widget_width:320};
+
+	(function() {
+	var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+	po.src = 'https://fastfen.club/helper/index.php/chat/getstatus/(click)/internal/(position)/middle_right/(leaveamessage)/false/(check_operator_messages)/true/';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	})();
+	</script>
+
+	
+  <script src=
+  "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
+  type="text/javascript">
+</script>
+<script src="js/bootstrap.min.js" type="text/javascript">
+</script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+</body>
+</html>

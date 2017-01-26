@@ -1,0 +1,1 @@
+<?php  namespace BtcRelax;	use \Exception;	/**	 * Exception which causes HTTP ERROR 404 (Not Found).	 */	class SessionExpiredException extends Exception {			public function __construct($sessionId = null) {    			error_log('Session Id:' . $sessionId . ' was expired!');                        session_destroy();			}	}?>

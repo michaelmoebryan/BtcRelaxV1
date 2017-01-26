@@ -1,0 +1,1 @@
+<?php  namespace BtcRelax;	use \Exception;	/**	 * Exception which causes HTTP ERROR 404 (Not Found).	 */	class NotFoundException extends Exception {			public function __construct($message = null) {    			error_log($_SERVER['REQUEST_URI']);			}	}?>

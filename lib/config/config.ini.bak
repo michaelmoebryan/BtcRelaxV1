@@ -1,0 +1,10 @@
+[BitId]
+SERVER_URL = https://fastfen.club/;
+
+[db]
+DSN= "mysql:host=dev.btcrelax.xyz;dbname=Ident";
+DB_HOST = dev.btcrelax.xyz ;
+DB_USER = ident;
+DB_PASS = ident ;
+DB_NAME = Ident;
+

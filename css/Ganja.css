@@ -1,0 +1,148 @@
+a
+{
+   color: #0000FF;
+   text-decoration: underline;
+}
+a:visited
+{
+   color: #800080;
+}
+a:active
+{
+   color: #FF0000;
+}
+a:hover
+{
+   color: #0000FF;
+   text-decoration: underline;
+}
+h1
+{
+   font-family: Arial;
+   font-size: 32px;
+   font-weight: bold;
+   font-style: normal;
+   text-decoration: none;
+   color: #000000;
+   background-color: transparent;
+   margin: 0px 0px 0px 0px;
+   padding: 0px 0px 0px 0px;
+   display: inline;
+}
+h2
+{
+   font-family: Arial;
+   font-size: 27px;
+   font-weight: bold;
+   font-style: normal;
+   text-decoration: none;
+   color: #000000;
+   background-color: transparent;
+   margin: 0px 0px 0px 0px;
+   padding: 0px 0px 0px 0px;
+   display: inline;
+}
+h3
+{
+   font-family: Arial;
+   font-size: 24px;
+   font-weight: normal;
+   font-style: normal;
+   text-decoration: none;
+   color: #000000;
+   background-color: transparent;
+   margin: 0px 0px 0px 0px;
+   padding: 0px 0px 0px 0px;
+   display: inline;
+}
+h4
+{
+   font-family: Arial;
+   font-size: 21px;
+   font-weight: normal;
+   font-style: italic;
+   text-decoration: none;
+   color: #000000;
+   background-color: transparent;
+   margin: 0px 0px 0px 0px;
+   padding: 0px 0px 0px 0px;
+   display: inline;
+}
+h5
+{
+   font-family: Arial;
+   font-size: 19px;
+   font-weight: normal;
+   font-style: normal;
+   text-decoration: none;
+   color: #000000;
+   background-color: transparent;
+   margin: 0px 0px 0px 0px;
+   padding: 0px 0px 0px 0px;
+   display: inline;
+}
+h6
+{
+   font-family: Arial;
+   font-size: 16px;
+   font-weight: normal;
+   font-style: normal;
+   text-decoration: none;
+   color: #000000;
+   background-color: transparent;
+   margin: 0px 0px 0px 0px;
+   padding: 0px 0px 0px 0px;
+   display: inline;
+}
+.CustomStyle
+{
+   font-family: "Courier New";
+   font-size: 16px;
+   font-weight: bold;
+   font-style: normal;
+   text-decoration: none;
+   color: #000080;
+   background-color: transparent;
+}
+
+.visibleDiv
+{
+  position: fixed;
+  border-radius: 6px;
+  border-color: navy;
+  border-width: medium;
+  border-style:solid;  
+}
+
+.visibleDiv button
+{
+	width: 100%;
+}
+
+.visibleDiv form
+{
+	margin: auto;
+} 
+
+#newOrderLayerId
+{
+	opacity: 0.5;
+	background-color: mintcream;
+	margin: 8px; 
+	padding: 8px;
+	  -webkit-box-shadow:2px 2px 2px 2px #737373;
+	  -moz-box-shadow:2px 2px 2px 2px #737373;
+	  -o-box-shadow:2px 2px 2px 2px #737373;
+	  -ms-box-shadow:2px 2px 2px 2px #737373;
+	  box-shadow:4px 4px 4px 4px #737373;    
+}
+
+#newOrderLayerId:hover
+{
+  opacity: 1 ;
+  -webkit-box-shadow:2px 2px 2px 2px #737373;
+  -moz-box-shadow:2px 2px 2px 2px #737373;
+  -o-box-shadow:2px 2px 2px 2px #737373;
+  -ms-box-shadow:2px 2px 2px 2px #737373;
+  box-shadow:1px 1px 1px 1px #737373;    
+}

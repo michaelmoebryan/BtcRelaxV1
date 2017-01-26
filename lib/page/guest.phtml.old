@@ -1,0 +1,67 @@
+<?php
+	if (!isset($email) || $email = '')
+	{  ?>
+	<script type="text/javascript">
+		$(window).bind("load", function() { 
+		var myForm,formData ;
+		myForm = new dhtmlXForm("myForm");
+		formData = [
+				{type: "settings", position: "label-center", labelWidth: 130, inputWidth: 160},
+				{type: "label", label: "Укажите e-mail для обратной связи"},
+				{type: "input", label: "E-mail", value: "", validate: "NotEmpty,ValidEmail"},
+				{type: "select", label: "Причина обращения", validate: "myFunc", options:[
+					{value: 0, text: "Поболтать"},
+					{value: 1, text: "Утеря доступа"},
+					{value: 2, text: "У меня есть акаунт на другом хабе федерации"},
+					{value: 3, text: "Экстра жопа, срочно рут данного хаба надо"}
+				]},
+				{type: "button", value: "Продолжить"}];
+							
+				myForm.enableLiveValidation(true);
+				myForm.attachEvent("onButtonClick",function(){
+					myForm.validate();
+					});
+		
+
+				function myFunc(val) {
+						return (val > 0);
+				};
+		});
+	</script>	         
+<?php    }
+		else
+		{   ?>
+	<script type="text/javascript">
+
+	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+	Tawk_API.visitor = {
+		name  : '<?php echo($userid[0]); ?>'};
+	Tawk_API.embedded='tawk_58262da6780fc531d6e6ee35';
+	(function(){
+	var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+	s1.async=true;
+	s1.src='https://embed.tawk.to/58262da6780fc531d6e6ee35/1b2g1acer';
+	s1.charset='UTF-8';
+	s1.setAttribute('crossorigin','*');
+	s0.parentNode.insertBefore(s1,s0);})();
+
+	Tawk_API.onPrechatSubmit = function(data){
+		Tawk_API.setAttributes(
+		{
+			'bitid' : '<?php echo($userid[0]); ?>'        
+		}, function(error){}); 
+
+	};
+	Tawk_API.onBeforeLoad = function(){
+		Tawk_API.setAttributes(
+		{
+			'bitid' : '<?php echo($userid[0]); ?>'        
+		}, function(error){}); 
+	};
+	</script>		
+			
+<?php   }
+?>
+<div id='GuestForm'>
+<div id='tawk_58262da6780fc531d6e6ee35'></div>
+</div>

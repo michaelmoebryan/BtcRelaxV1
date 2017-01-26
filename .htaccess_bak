@@ -1,0 +1,15 @@
+
+RewriteEngine on
+DirectoryIndex index.php
+#RewriteCond %{HTTPS} off
+#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+<IfModule mod_suphp.c> 
+  suPHP_ConfigPath /home/fastksjq/public_html 
+</IfModule>
+#RewriteCond %{HTTP_HOST} ^fastfen\.club$ [OR]
+#RewriteCond %{HTTP_HOST} ^www\.fastfen\.club$
+#RewriteRule ^/?$ "https\:\/\/ua\.bitganj\.website\/index\.html" [R=302,L]
+
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)/$ /index.php?page=$1 [L]

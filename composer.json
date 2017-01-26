@@ -1,0 +1,11 @@
+{
+    "name": "vendor/shop",
+    "description": "Description of project BtcRelax Shop.",
+    "authors": [
+        {
+            "name": "Chronos",
+            "email": "godchronos@tuta.io"
+        }
+    ],
+    "require": {}
+}

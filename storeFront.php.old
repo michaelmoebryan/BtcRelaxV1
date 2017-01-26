@@ -1,0 +1,212 @@
+<?php
+    session_start();
+    if ($_SESSION['user_id'] === NULL)
+    {
+            header("Location: index.php" );         
+    }
+        
+?>
+
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Bootstrap core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- <link href="css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" /> -->
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="css/styles.css" rel="stylesheet">
+	<link href="css/show_message.css" rel="stylesheet" type="text/css">
+	<link href="css/NewOrder.css" rel="stylesheet">
+	<script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+<!--	<script src="js/main.js" type="text/javascript"></script>   -->
+	<script src="js/order.js" type="text/javascript"></script>
+	<script src="js/show_message.js" type="text/javascript"></script>	
+	<!-- Custom styles for this template -->
+	<link href="css/styles.css" rel="stylesheet">
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+		.icon-refresh-animate {
+				animation-name: rotateThis;
+				animation-duration: .5s;
+				animation-iteration-count: infinite;
+				animation-timing-function: linear;
+			}
+	</style>
+  </head>
+
+  <body>
+
+  <!--  <div class="navbar navbar-inverse navbar-fixed-top" role=
+  "navigation">      
+    <div class="navbar-header">
+        <a class="navbar-brand" href="http://bitrelax.jimdo.com"><img src="/img/BtcRelax64.gif" alt="BtcRelax project"></a>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <i class="fa fa-bars"></i>
+        <span class="sr-only">Toggle navigation</span>
+        </button> 
+      </div>
+    <div class="container">
+
+
+      <?php if ($_SESSION['user_id'] !== NULL)
+            {
+                if ($_SESSION['cust_id'] !== NULL)
+                    { ?>                                                                                            
+                                  <li class="active"><a href="#">Ветрина</a></li>
+                                  <li><a href="killSession.php">Да ну нах, меня здесь небыло!</a></li>                                                   
+                    <?php     }
+                    else
+                    {
+                ?>
+                                  <li class="active"><a href="#">Главная</a></li>
+                                  <li><a href="killSession.php">Да ну нах, меня здесь небыло!</a></li>                                
+                <?php 
+                    }
+            }
+            else
+            {
+                ?>                             
+                          <li class="active"><a href="#">CopoBan</a></li>                                            
+                <?php
+            }        
+        ?>
+    </div>
+  </div>
+-->
+  
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	  <div class="container">
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="http://bitrelax.jimdo.com"><img src="/img/ff64.gif" alt="BtcRelax" ></a>
+		</div>
+		<div class="collapse navbar-collapse">
+		  <ul class="nav navbar-nav">
+                  <li class="active"><a href="#">Главная</a></li>
+                  <li><a href="StoreFront.php">Витрина</a></li>
+                  <li><a href="killSesssion.php">Да ну нах, меня здесь небыло!</a></li>     
+		  </ul>
+		</div><!--/.nav-collapse -->
+	  </div>
+	</div>
+
+	<div class="container">
+
+	  <div class="starter-template">
+		<h1 style="font-family: museo-slab, Georgia, 'Times New Roman', Times, serif;
+	font-weight: 500; text-shadow: 4px 3px 0px #1d9d74, 9px 8px 0px rgba(0, 0, 0, 0.15);">Заказ</h1>
+
+		<?php 				
+				try
+				{               
+					if (isset($_POST['getBookmark']))
+					{												                        
+						require_once 'ganja/ganja_core.php';
+						InitSession();
+						$pOrderId = $_SESSION["orderId"];
+						if (isset($_SESSION['currentOrder']) && empty($pOrderId))
+						{
+							$pOrder = $_SESSION['currentOrder'];
+							$pOrderId = $pOrder->getOrderId();
+						}
+						$curOrder = OrderFactory::create($pOrderId,'ru');						
+						$pBookmarkId = $_POST['getBookmark'];
+						$pnt = BookmarkFactory::create($pBookmarkId);
+						$pOrderQuantity = $pnt->getQuantity();
+						$totalPrice = GetTotalPriceUAH($pOrderQuantity);            
+						$totalPriceBtc = GetBTCPriceByUAH($totalPrice);
+						$messageBox = '<form name="setOrder" id="getOrder" action="#" method="post">
+										<div id="dialog-message" class="modalDialog">
+										<div id="1" class="center-block">
+											<h2>Внимание!</h2>
+											  <p>' . $curOrder->GetPriceDescription() . '</p>
+											  <p>Цена заказа:' . $totalPrice .'</p>
+											  <p>Цена в BTC:<strong>' . $totalPriceBtc . '</strong></p>
+											<input type="hidden" name="OrderId" value="' . $pOrderId . '" >
+											<input type="hidden" name="BookmarkId" value="' . $pBookmarkId . '" >
+											<input type="hidden" name="orderQuantity" value="' . $pOrderQuantity . '" >
+											<section class="alert-danger">
+											   <p>Не стоит продолжать если у Вас нет на счету данного кол-ва биткоинов. 
+											   Если заказ не будет оплачен в течении ближайшего часа, Ваш заказ будет автоматически отменён. При этом бог Хронос не несёт за это ответственности.</p>
+											</section>
+											<p><button id="closeOrder"  type="submit"  name="actionCode" value="cancelOrder"  class="btn btn-danger "><i class="fa fa-trash-o" aria-hidden="true"></i> Уже не хочу! </button></p>
+										   <p><button id="closeMessage"  class="btn btn-danger pull-left" onclick="CloseMessage();">Отменить</button>
+										   <button id="getOrderButton" name="actionCode" value="confirmOrder" type="submit" class="btn btn-success btn pull-right">Да, есть</button>
+										</p></div></div>
+										</form>';
+						echo $messageBox;
+						
+					}
+					else
+					{
+						include 'getOrder.php';
+						$frmHtml = GetOrderForm('ru');
+						echo($frmHtml);                         
+					}
+						   
+				}
+				catch (Exception $e)
+				{
+					error_log($e->getMessage());    
+				}; 
+		?>
+	  </div>
+
+	</div><!-- /.container -->
+
+
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>         -->
+	
+	<?php
+		if (isset($_SESSION['orderId']))
+						{
+							$orderId = $_SESSION['orderId'];
+							$chatHtml = sprintf("<script type=\"text/javascript\">
+								var LHCChatboxOptionsEmbed = {hashchatbox:'empty',identifier:'%s'};
+								(function() {
+								var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+								po.src = '//fastfen.club/helper/index.php/chatbox/embed/(chat_height)/220';
+								var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+								})();
+								</script>", $orderId );
+							echo($chatHtml);
+						};        
+	?>
+	<script type="">
+			$( document ).ready( function() {
+				$( "#btnOrderRefresh" ).on( "click", function( e ) {
+					location.reload(true);
+					var $icon = $( this ).find( ".icon-refresh" ),
+						animateClass = "icon-refresh-animate";
+
+					$icon.addClass( animateClass );
+					// setTimeout is to indicate some async operation
+					window.setTimeout( function() {
+						$icon.removeClass( animateClass );
+					}, 2000 );
+				});    
+			});
+	
+	</script>
+	<!--<div id="lhc_chatbox_embed_container" ></div>-->
+  </body>
+</html>

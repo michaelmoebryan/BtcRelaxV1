@@ -1,0 +1,1 @@
+<?php namespace BtcRelax\Dao;  final class BookmarkSearchCriteria {	private $status = null;	/**	 * @return string	 */	public function getStatus() {		return $this->status;	}	/**	 * @return this	 */	public function setStatus($status) {		$this->status = $status;		return $this;	}} ?>
