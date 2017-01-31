@@ -11,6 +11,11 @@ function doOnUnload()
     App.finalize();
 }
 
+function updateSessionState(newstate)
+{
+   App.set_state(newstate); 
+}
+
 function btnPush()
 {
     var btnPS = new Audio();
@@ -22,16 +27,21 @@ function btnPush()
     {
 //        $(this).animate({left:"-10px",top:"-10px", opacity: 0.5, zoom: 0.5 }, "slow", function() {
             App.hideLoginWindow();
-            App.finalize();
-            $('#idMainButton').animate({left:"50%",top:"50%", opacity: 0.5, zoom:1});
-            killSession();
+            $('#idMainButton').switchClass("logo_auth","logo_unauth");
             
 //        });
 
     } else
     {
-          $('#idMainButton').animate({left:"50px",top:"50px", opacity: 0.5, zoom: 0.5  });
-          App.showLoginWindow();
+         $('#idMainButton').switchClass("logo_unauth","logo_auth");
+                 //removeClass("logo_unauth",3000).addClass("logo_auth",3000);
+//        let vSelf = $(document.getElementById('idMainButton'));
+//        vSelf.animate({
+//            left: '50%',
+//            top: '50%',
+//            opacity: '0,5'
+//        }, "slow");
+        App.showLoginWindow();
 
     }
 }
@@ -51,7 +61,8 @@ function HideLoginWindow()
 function killSession()
 {
     $.get("json.php?action=kill", function(data, status){                
-                    alert("Data: " + data + "\nStatus: " + status);
+                localStorage.clear();   
+                //alert("Data: " + data + "\nStatus: " + status);
             });
 
 }

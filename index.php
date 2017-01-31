@@ -3,5 +3,5 @@
 	
 	$core = new \BtcRelax\Core();
 	$core->init();	
-//	$core->run();
+	$core->run();
 

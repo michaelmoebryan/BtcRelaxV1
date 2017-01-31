@@ -54,10 +54,81 @@ body {
   width: -moz-fit-content;
   width:-webkit-fit-content;
   width:-ms-fit-content;
-
   margin: auto;
   padding: 5px 20px 13px 20px;
   border-radius: 10px;
   box-sizing: border-box;
 }
 
+.logo
+{
+    display: none;
+}
+
+.logo_unauth
+{
+    border-style: none;
+    padding: 0;
+    box-sizing: inherit;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);  
+    animation-name: animated_div;
+}
+
+.logo_unauth img
+{
+    width: 150%;
+    height: 150%;        
+}
+
+.logo_unauth img:hover
+{
+
+}
+
+
+.logo_auth
+{
+    border-style: none;
+    padding: 0;
+    border: 0;
+    -webkit-animation-fill-mode: forwards;
+    break-after: avoid;
+    background-color: transparent;
+    resize: both;
+    position: absolute;
+    left: 50px;
+    top: 50px;
+    animation-name: animated_div;
+}
+
+.logo_auth img
+{
+    width: 75%;
+    height: 75%;
+}
+
+.logo_auth img:hover
+{
+    
+}
+
+#animated_div {
+	width: 76px;
+	height: 47px;
+	background: #92B901;
+	color: #ffffff;
+	position: relative;
+	font-weight: bold;
+	font-size: 20px;
+	padding: 10px;
+	animation: animated_div 5s 1;
+	-moz-animation: animated_div 5s 1;
+	-webkit-animation: animated_div 5s 1;
+	-o-animation: animated_div 5s 1;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}

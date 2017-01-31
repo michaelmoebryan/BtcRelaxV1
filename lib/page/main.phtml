@@ -4,39 +4,45 @@ namespace BtcRelax;
 
         use \BtcRelax\SecureSession; 
     
-        if (SecureSession::getActualStatus() === SecureSession::STATUS_UNAUTH)
+        global $core;
+        
+        if ($core->getSessionState() === SecureSession::STATUS_UNAUTH)
         { ?>
             
                 <div id="copobanContentId" class="w3-animate-zoom starter-template" >
-                    <h1 style="font-family: museo-slab, Georgia, 'Times New Roman', Times, serif; font-weight: 500; text-shadow: 4px 3px 0px #1d9d74, 9px 8px 0px rgba(0, 0, 0, 0.15);">
+                    <h1 style="font-family: museo-slab, Georgia, 'Times New Roman', Times, serif; font-weight: 500; 
+                        text-shadow: 4px 3px 0px #1d9d74, 9px 8px 0px rgba(0, 0, 0, 0.15);">
                         CopoBan !</h1>
-                    <a href="<?php echo $_SESSION['bitid_uri']; ?>">
+                    <form id="frmLogin" action="#"  method="post" >
+                        <input name="nonce" value="<?php echo $_SESSION['nonce']; ?>" type="hidden" />
+                        <a href="<?php echo $authParams['bitid_uri']; ?>">
                         <img  class="loginQr" alt="Click on QRcode to activate compatible desktop wallet" border="0" 
-                              src="<?php echo $_SESSION['qr_uri']; ?>" />
-                    </a>
+                              src="<?php echo $authParams['qr_uri']; ?>" />
+                    </a>                        
                     <script type="text/javascript">
                         $(document).ready(function () {
                             //Handler for .ready() called.					
 
                             var myInterval = setInterval(function () {
                                 var r = new XMLHttpRequest();
-                                r.open("POST", "<?php echo $_SESSION['ajax_uri']; ?>", true);
+                                r.open("POST", "<?php echo $authParams['ajax_uri']; ?>", true);
                                 r.onreadystatechange = function () {
                                     if (r.readyState != 4 || r.status != 200)
                                         return;
-                                    if (r.responseText != 'false') {
-                                        $(document.getElementById('copobanId')).hide("slow");
-                                        clearInterval(myInterval);                                                                       
-                                        window.location.replace('<?php echo $_SESSION['user_uri']; ?>');
-                                        };                                    
+                                    if (r.responseText === 'true') {
+                                            $(document.getElementById('copobanId')).hide("slow");
+                                            clearInterval(myInterval);                                                                       
+                                            $('#frmLogin').submit();             
+                                         };
                                 };
-                                r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                                r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');                              
                                 r.send("nonce=<?php echo $_SESSION['nonce']; ?>")
                             }, 30000);
                         });
 
 
                     </script>
+                    </form>
                 </div>
         <?php }
 

@@ -1,22 +1,21 @@
 <?php
-	namespace BtcRelax;
 
-	use \BtcRelax\Core;
-	use \BtcRelax\Config;
-	use \BtcRelax\DAO;
-	use \BtcRelax\Flash;
-	use \BtcRelax\Utils;
-	use \BtcRelax\BitID;
+   namespace BtcRelax;
 
-  if ( !SecureSession::hasBitid())
-  {
-	   Utils::Redirect('main');
-  }
-  else
-  {     
-	  $nonce  = SecureSession::getValue('nonce');
-	  $userid = SecureSession::getBitid(); 
-	  //$email = SecureSession::getValue('email');
-	  //$email = "temp@mail.ru";
-  }
+    use \BtcRelax\Utils;
+
+    global $core;
+
+            $status = $core->getSessionState();
+
+            if ($status == SecureSession::STATUS_GUEST)
+            {
+                $guestContent = "<h1>Hello guest</h1>";
+            }
+            else
+            {
+                       Utils::Redirect('main');
+
+            }
+
 ?>

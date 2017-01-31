@@ -10,7 +10,7 @@ use \BtcRelax\Utils;
 
 require('lib/core.inc');
 	
-$core = new \BtcRelax\Core();
+$core = new Core();
 $core->init();    
 
 $bitid = new \BtcRelax\BitID();

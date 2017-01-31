@@ -7,8 +7,13 @@ require('lib/core.inc');
 $core = new \BtcRelax\Core();
 $core->init();    
 $dao = new \BtcRelax\DAO();
-//$nonce = $_POST['nonce'];
-$nonce = \BtcRelax\SecureSession::getValue("nonce");
+$nonce = $core->getNonce();
+if (!isset($nonce) && isset($_POST))
+{
+    $nonce = $_POST["nonce"];
+};
+
+
 $result= $dao->checkNonceAddr($nonce);
 //if($result) {
 //	$core->setBitId($result);       

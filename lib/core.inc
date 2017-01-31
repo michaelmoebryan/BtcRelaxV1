@@ -39,7 +39,7 @@ use BtcRelax\SecureSession;
 		'BtcRelax\SecureSession' => '/SecureSession.php',
 	];
     
-        private $current_session = null;
+        private $current_session ;
         public $state;
         
 	public function __construct() {    
@@ -54,13 +54,15 @@ use BtcRelax\SecureSession;
 		mb_internal_encoding('UTF-8');
 		set_exception_handler([$this, 'handleException']);
 		spl_autoload_register([$this, 'loadClass']);	               
-                $this->current_session = new \BtcRelax\SecureSession();
-                
+                $cur_session = new \BtcRelax\SecureSession();
+                $cur_session->init();
+                $this->current_session = $cur_session;
         }
 	
 	public function setBitId($vBitId)
 	{
-            if ($this->current_session->hasCustomer() === false && $vBitId !== null) {
+            //if ($this->current_session->hasCustomer() === false && $vBitId !== null) {
+            if ($vBitId !== null){
             $dao = new DAO();
             $idCustomer = $dao->customerByBitId($vBitId);
             if (isset($idCustomer) && ($idCustomer !== false)) {
@@ -88,22 +90,40 @@ use BtcRelax\SecureSession;
             $this->current_session->getCustomer();
 	}
  
+        public function killSession()
+        {
+            $this->current_session->killSession();
+        }
+        
 	public function isAuthenticated()
 	{
 		$result = ($this->current_session->getActualStatus() !==  SecureSession::STATUS_UNAUTH);   
 		return $result;	
 	}
 	
-	public function isGuest()
-	{              
-		$result = ($this->current_session->getActualStatus() == SecureSession::STATUS_GUEST) ;   
-		return $result;				
-	}   
+       
+        public function setAuthenticate()
+        {
+            $result =  $this->current_session->Authenticate();
+            return $result;
+        }
 	
+        public function getSessionState()
+        {
+            $resultState = $this->current_session->getActualStatus();
+            return $resultState;
+        }
+        
+        public function getNonce()
+        {
+            $result = $this->current_session->getNonce();
+            return $result;
+        }
+        
 	public function getDefaultPage()
 	{
-	    $actState = $this->current_session->getActualStatus();
-            switch ($actState) {
+	    $actualState = $this->current_session->getActualStatus();
+            switch ($actualState) {
             case SecureSession::STATUS_USER:
               $result_page = 'user';            
                 break;
@@ -121,8 +141,8 @@ use BtcRelax\SecureSession;
 	}
 	 
 	public function run() {
-		//$nonce = Utils::tryGetUrlParam('nonce');
-        $nonce = $this->current_session->getValue('nonce');		
+	$nonce = Utils::tryGetParam('nonce');
+        //$nonce = $this->current_session->getValue('nonce');		
         if (($nonce !== false) && (!empty($nonce)))
 		{
                     $dao = new DAO();                   

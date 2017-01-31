@@ -10,6 +10,7 @@
           rel="stylesheet" type="text/css">
     <link href="css/styles.css" rel="stylesheet" type="text/css">
     <link href="css/show_message.css" rel="stylesheet" type="text/css" >
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
     <link href="css/notify.css" rel="stylesheet" type="text/css">
 
     <link rel="stylesheet" type="text/css" href="js/app/app.css">
@@ -17,7 +18,7 @@
     <script type="text/javascript" src="js/jquery-1.11.3.min.js" ></script>		
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/notify.js" ></script>   		
-
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/dhtmlx.js"></script>
     <script type="text/javascript" src="js/app/app.js"></script>         		
     <script type="text/javascript" src="js/app/copoban.js"></script>
@@ -36,8 +37,8 @@
     <body class="bgimg w3-container" onload="doOnLoad();" onunload="doOnUnload();" >
         <nav>
             <div class="navbar-header">                       
-                <button onclick="btnPush();" id="idMainButton" class="w3-btn w3-display-middle" style="background-color:transparent;z-index:9999;transform-origin:center;left:50%;top:50%;">                            
-                    <img src="/img/Logo128.gif"/>                        
+                <button id="idMainButton" class="logo" >                            
+                    <img src="/img/Logo128.gif" />
                 </button>
                 <?php
                 if (isset($header)) {
@@ -59,7 +60,12 @@
 <?php require $template; ?>
         </div>
         <footer>
-            <?php include 'guestchat.inc' ?>
+           <script>
+			$( document ).ready( function() {
+                               updateSessionState('<?php  echo($core->getSessionState()); ?>'); 
+                            });
+	
+            </script>            
         </footer>
     </body>
 </html>

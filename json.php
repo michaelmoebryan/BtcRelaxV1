@@ -5,30 +5,27 @@
   
   require('lib/core.inc');
 	
-    $core = new \BtcRelax\Core();
-    $core->init();    
+  $core = new \BtcRelax\Core();
+  $core->init();    
   $message = array();
   
   switch($_REQUEST["action"])
   {
-        case 'getSession':
-            require('lib/secsessions.inc');
-            if (BtcRelax\SecureSession::is_session_started() === true)
-            {
-                $message["code"] = "0";
-                $message["message"] = session_id();
-            }
-            else 
-            {
-                $message["code"] = "-2";
-                $message["message"] = "Session not started";
-            };
-            
-            break;
+        case 'kill':
+                try
+                {
+                    $core->killSession();
+                    $message["code"] = "0";
+                }
+                catch (Exception $ex)
+                {
+                    $message["code"] = "-2";
+                    $message["message"] = "Unable to kill session";                    
+                };
         case 'ping':
-            require('lib/secsessions.inc');
             $message["code"] = "0";
-            $message["message"] = BtcRelax\SecureSession::getActualStatus();
+            $message["message"] = $core->getSessionState();
+            $message["session_id"] = session_id(); 
             break;
 	default:
             $message["code"] = "-1";
