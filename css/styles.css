@@ -132,3 +132,8 @@ body {
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
+
+.guest_reg_frm
+{
+    display: block;    
+}

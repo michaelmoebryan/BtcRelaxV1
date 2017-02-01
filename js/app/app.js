@@ -79,6 +79,8 @@
             switch(newState) {
                 case 'GUEST':
                     $('#idMainButton').addClass('logo_auth').fadeIn('5000');                    
+                    $('#copobanId').addClass('guest_reg_frm').slideUp('3000');
+                    $('#dialog').dialog('open');
                     break;
                 case 'USER':
                     $('#idMainButton').addClass('logo_auth').fadeIn('5000');                    
