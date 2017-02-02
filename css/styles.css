@@ -76,6 +76,7 @@ body {
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);  
     animation-name: animated_div;
+    z-index: 9999;
 }
 
 .logo_unauth img
@@ -84,10 +85,6 @@ body {
     height: 150%;        
 }
 
-.logo_unauth img:hover
-{
-
-}
 
 
 .logo_auth
@@ -99,6 +96,7 @@ body {
     break-after: avoid;
     background-color: transparent;
     resize: both;
+    z-index: 9999;
     position: absolute;
     left: 50px;
     top: 50px;
@@ -111,10 +109,6 @@ body {
     height: 75%;
 }
 
-.logo_auth img:hover
-{
-    
-}
 
 #animated_div {
 	width: 76px;
