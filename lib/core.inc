@@ -37,6 +37,8 @@ use BtcRelax\SecureSession;
 		'BtcRelax\LayoutHeader' => '/header.inc',
 		'BtcRelax\Dhtmlx' => '/dhtmlx.inc',
 		'BtcRelax\SecureSession' => '/SecureSession.php',
+                'BtcRelax\AM' => '/am.php',
+                'BtcRelax\User' => '/user.php',
 	];
     
         private $current_session ;
@@ -57,6 +59,12 @@ use BtcRelax\SecureSession;
                 $cur_session = new \BtcRelax\SecureSession();
                 $cur_session->init();
                 $this->current_session = $cur_session;
+        }
+        
+        public function createUser()
+        {
+            //
+            $am = new AM();
         }
 	
 	public function setBitId($vBitId)
