@@ -14,7 +14,7 @@
 			const STATUS_LOST = "Lost";
                         
 			
-			 private $pOpenFrom;		
+
 	
 			 public $pIdBookmark = null;
 			 private $pCreateDate; 
@@ -34,6 +34,10 @@
 			 private $pIdDroper;			 
 
 
+                        public function __construct() 
+			{
+                              $this->pState = self::STATUS_PREPARING;
+			}
 			 
 			 
 			 function getIdBookmark  ()
@@ -55,6 +59,14 @@
 			 {
 						$this->pState = $pValue;
 			 }
+                         
+
+					 
+			 function setQuantity($pValue)
+			 {
+                                $this->pQuantity = $pValue;
+			 }
+                         
 			 function getCreateDate ()
 			 {
 				 return $this->pCreateDate;
@@ -157,16 +169,7 @@
 			 {
 				$this->pAdvertiseTitle = $pValue;
 			 }
-			 
-			 function getOpenFrom()
-			 {
-				return $this->OpenFrom;
-			 }
-					 
-			 function setOpenFrom($pValue)
-			 {
-				$this->OpenFrom = $pValue;
-			 }        
+			       
 			 
 			 function getUnlockDate()
 			 {
@@ -189,11 +192,7 @@
 			 }
 
 			 
-			public function __construct() 
-			{
 
-			}
-			 
 			
 			public static function allStatuses() {
 			return [

@@ -38,10 +38,11 @@ use BtcRelax\SecureSession;
 		'BtcRelax\Dhtmlx' => '/dhtmlx.inc',
 		'BtcRelax\SecureSession' => '/SecureSession.php',
                 'BtcRelax\AM' => '/am.php',
-                'BtcRelax\User' => '/user.php',
+                'BtcRelax\User' => '/usr.php',
 	];
     
         private $current_session ;
+        //public $am_instance;
         public $state;
         
 	public function __construct() {    
@@ -56,16 +57,13 @@ use BtcRelax\SecureSession;
 		mb_internal_encoding('UTF-8');
 		set_exception_handler([$this, 'handleException']);
 		spl_autoload_register([$this, 'loadClass']);	               
+//                $config = Config::getConfig('customize');
+//                $this->am_instance = new AM($config['HUB_ROOT'],$config['IS_FREE_REGISTER']);
                 $cur_session = new \BtcRelax\SecureSession();
                 $cur_session->init();
                 $this->current_session = $cur_session;
         }
         
-        public function createUser()
-        {
-            //
-            $am = new AM();
-        }
 	
 	public function setBitId($vBitId)
 	{
@@ -77,26 +75,41 @@ use BtcRelax\SecureSession;
                 $custDao = new CustomerDao();
                 $newCustomer = $custDao->findById($idCustomer);
                 $this->current_session->setCustomer($newCustomer);
-                Flash::addFlash("Добро пожаловать. Вы успешно вошли в систему!");
+                //Flash::addFlash("Добро пожаловать. Вы успешно вошли в систему!");
                 return true;
             } else {
-                $this->current_session->setBitid($vBitId);
-                return true;
-            };
-        } else {
-            return false;
+                    $this->current_session->setBitid($vBitId);
+                    return true;
+                    };
+            } else 
+            {
+                return false;
             }
         }
 	
 	public function getBitId()
 	{
-		$this->current_session->getBitid();
+            return $this->current_session->getBitid();
 	}    
 
 	public function getCustomer()
 	{
-            $this->current_session->getCustomer();
+            return $this->current_session->getCustomer();
 	}
+        
+        public function getUser()
+	{
+            $result = null;
+            $cust = $this->current_session->getCustomer();
+            if (isset($cust))
+            {
+                $cUser = new \BtcRelax\User();
+                $cUser->init($cust->getIdCustomer());
+                $result = $cUser;                
+            }
+            return $result;
+        }
+        
  
         public function killSession()
         {
@@ -233,10 +246,10 @@ use BtcRelax\SecureSession;
 			$run = true;
 			// data for main template
 			$template = $this->getTemplate($page);
-			$flashes = null;
-			if (Flash::hasFlashes()) {
-				$flashes = Flash::getFlashes();
-			}
+//			$flashes = null;
+//			if (Flash::hasFlashes()) {
+//				$flashes = Flash::getFlashes();
+//			}
 
 			// main template (layout)
 			require $_SERVER['DOCUMENT_ROOT'] . self::LAYOUT_DIR . 'index.phtml';
@@ -248,9 +261,16 @@ use BtcRelax\SecureSession;
 
 	private function logError($error)
 	{
-		$date = date('d/m/Y h:i:s a', time());
-		error_log($date . ":" . $error.PHP_EOL, 3, __DIR__ . "/logic-errors.log");
-	}
+            try
+            {
+                $this->current_session->logMessage($error);
+            }
+            catch (Exception $exc)
+            {
+                $date = date('d/m/Y h:i:s a', time());
+                error_log($date . "Core unable to use logger, because:" . $exc->getMessage() . ". While catched error:" . $error.PHP_EOL, 3, __DIR__ . "/core-errors.log");
+            }
+        }
 	
 	private function getScript($page) {
 		return $_SERVER['DOCUMENT_ROOT'] . self::PAGE_DIR . $page . '.php';

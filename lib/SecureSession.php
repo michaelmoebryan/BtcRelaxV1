@@ -41,7 +41,7 @@ final class SecureSession {
                 $this->startSession();
             }
         }
-        \BtcRelax\SecureSession::logMessage(\sprintf("Loaded session id:%s", session_id()));             
+        //\BtcRelax\SecureSession::logMessage(\sprintf("Loaded session id:%s", session_id()));             
     }
     
 
@@ -107,6 +107,7 @@ final class SecureSession {
         $this->setVal('user_uri', $user_uri);
 
         $dao = new DAO();
+        
         $dao->insert($nonce, $_SERVER['REMOTE_ADDR']);
         return array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri );
     }
@@ -200,9 +201,16 @@ final class SecureSession {
     
     public static function logMessage($msg)
 	{
-		$date = date('d/m/Y h:i:s a', time());
+            try
+            {
+                $date = date('d/m/Y h:i:s a', time());
 		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/session.log");
-	}
+            }
+            catch (Exception $ex)
+            {
+                throw new Exception('Critical permissions, denied!!!');
+            }
+        }
     
     
     public static function allStatuses() {

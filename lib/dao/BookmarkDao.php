@@ -30,25 +30,28 @@
 			private function getFindSql(BookmarkSearchCriteria $search = null) {
 			   //TODO: Revork for bookmark entity  
 				
-				$sql = 'SELECT  OpenFrom, EndDate, UnlockDate, IdBookmark, State, CreateDate, IdOrder, Quantity, Latitude, Longitude, 
-					Link, Description, RegionTitle, IdDroper, CustomPrice, AdvertiseTitle FROM Bookmarks WHERE EndDate IS NULL ';
-					$orderBy = ' OpenFrom  ';
+				$sql = 'SELECT IdBookmark, CreateDate, IdOrder, Quantity, EndDate,Latitude, Longitude, Link, Description, RegionTitle,  '
+                                        . 'CustomPrice, PriceCurrency , AdvertiseTitle, UnlockDate  , State, IdDroper    '
+                                        . ' FROM Bookmarks WHERE EndDate IS NULL ';
+					$orderBy = ' CreateDate  ';
 					if ($search !== null) {
 						if ($search->getStatus() !== null) {
-							$sql .= 'AND State = ' . $this->getDb()->quote($search->getStatus());
+							//$sql .= 'AND State = ' . $this->getDb()->quote($search->getStatus());
 							switch ($search->getStatus()) {
 								
 								case Bookmark::STATUS_PREPARING:
-									$orderBy = 'due_on, priority';
+									$where = 'Preparing';
 									break;
 								case Bookmark::STATUS_CHECKING:
-									$orderBy = 'due_on DESC, priority';
+									$where = 'Checking';
 									break;
 								case Bookmark::STATUS_PUBLISHED:
-									break;
+									$where = 'Published';
+                                                                        break;
 								default:
 									throw new NotFoundException('No order for status: ' . $search->getStatus());
 							}
+                                                        $sql .= sprintf('AND State = \'%s\'', $where );
 						}
 					}
 					$sql .= ' ORDER BY ' . $orderBy;     
@@ -57,8 +60,8 @@
 		
 		
 		public function findById($id) {
-			$row = parent::query(sprintf("SELECT OpenFrom, EndDate, UnlockDate, IdBookmark, State, CreateDate, IdOrder, Quantity, Latitude, Longitude, 
-					Link, Description, RegionTitle, IdDroper, CustomPrice, AdvertiseTitle FROM Bookmarks WHERE idBookmark = '%s' LIMIT 1 ", $id))->fetch();
+			$row = parent::query(sprintf("SELECT IdBookmark, CreateDate, IdOrder, Quantity, EndDate,Latitude, Longitude, Link, Description, RegionTitle,  CustomPrice, PriceCurrency , AdvertiseTitle, UnlockDate  , State, IdDroper    "
+                                . " FROM Bookmarks WHERE idBookmark = '%s' LIMIT 1 ", $id))->fetch();
 			if (!$row) {
 				return null;
 			}

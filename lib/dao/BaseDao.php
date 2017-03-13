@@ -42,7 +42,6 @@
 	 
 		private static function throwDbError(array $errorInfo) {
 			$error_message = 'DB error [' . $errorInfo[0] . ', ' . $errorInfo[1] . ']: ' . $errorInfo[2];
-			error_log($error_message);
 			throw new Exception($error_message);
 		}
 		

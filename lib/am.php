@@ -9,23 +9,33 @@
 namespace BtcRelax;
 
 use BtcRelax\Config;
+use BtcRelax\User;
 use Exception;
 use PDO;
 
+require 'amI.php';
 /**
  * Description of am
  *
  * @author Chronos
  */
 class AM implements IAM {
-    private $root_user_id;
-    private $isAllowFreeRegistration;
+    protected $root_user_id;
+    protected $isAllowFreeRegistration;
+    protected $rootUser;
     
-    public function __construct() {    
-	$config = Config::getConfig('customize');
+    
+    public function __construct($rootUserId,$isAFR) { 
+        $this->root_user_id = $rootUserId;
+        $this->isAllowFreeRegistration = $isAFR;
+
         try {
-            $this->root_user_id = $config['HUB_ROOT'];
-            $this->isAllowFreeRegistration = $config['IS_FREE_REGISTER'];
+  
+            if ($this->root_user_id !== "")
+            {    
+                $root_u = new User();
+                $this->rootUser = $root_u->Init($this->root_user_id);
+            }
         } 
         catch (Exception $ex) {
 		throw new Exception('AM init error: ' . $ex->getMessage());
@@ -33,8 +43,14 @@ class AM implements IAM {
     }
     
     
-    public function CreateUser($parent, $child) {
-        $result = new user();
+    public function CreateNewUser($parent, $child) {
+        $result = false;
+        if (($parent == null) && ($this->isAllowFreeRegistration))
+        {           
+            $n_user = new \BtcRelax\User();
+            $result = $n_user->RegisterNewUserId($child);
+            
+        };
         return $result;
     }
 

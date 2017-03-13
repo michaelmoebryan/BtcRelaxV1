@@ -22,22 +22,31 @@
   
   switch($_REQUEST["action"])
   {
-        case 'createUser':
-            $core->createUser();
-            break;
+//        case 'createUser':
+//            try
+//            {
+//                    $core->createUser();
+//                    $message["code"] = "0";
+//                    $message["message"] = "Я тебя подзапомнил!";                    
+//            }
+//            catch (Exception $ex)
+//            {
+//                    $message["code"] = "-3";
+//                    $message["message"] = "Unable to create new user!";                    
+//            }
+//            break;
         case 'kill':
                 try
                 {
                     $core->killSession();
                     $message["code"] = "0";
-                    $message["message"] = "Session was killed";                    
-                    break;
-                }
+                    $message["message"] = "Session was killed";}
                 catch (Exception $ex)
                 {
                     $message["code"] = "-2";
                     $message["message"] = "Unable to kill session";                    
-                }
+                };
+                break;
         case 'ping':
             $message["code"] = "0";
             $message["message"] = $core->getSessionState();

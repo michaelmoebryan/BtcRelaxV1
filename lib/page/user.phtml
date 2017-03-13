@@ -1,1 +1,7 @@
-<h3>Hello</h3>
+<h1>Доступные закладки на данный момент</h1>
+<?php
+    if (!$isActiveOrder) {
+    echo \BtcRelax\renderGetActiveBookmarks();
+} else {
+    echo \BtcRelax\renderActiveOrders();
+}

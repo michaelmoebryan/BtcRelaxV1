@@ -60,13 +60,10 @@
         <div id="copobanId"  class="w3-display-middle" style="display: none;">
 <?php require $template; ?>
         </div>
-        <footer>
-           <script>
-			$( document ).ready( function() {
-                               updateSessionState('<?php  echo($core->getSessionState()); ?>'); 
-                            });
-	
-            </script>            
+        <footer class="wb_footer w3-container" id="footer" role="contentinfo">
+           <?php 
+           	include 'footer.php'; 
+            ?>	
         </footer>
     </body>
 </html>
