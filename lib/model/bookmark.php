@@ -16,7 +16,7 @@
 			
 
 	
-			 public $pIdBookmark = null;
+			 public  $pIdBookmark = null;
 			 private $pCreateDate; 
 			 private $pIdOrder;
 			 private $pQuantity;
@@ -213,7 +213,7 @@
 				case 'ru':
 					$lOrderQuantity = 'Заказано:';
 					$lLink = 'Купить';
-					$lTitle = $this->pRegionTitle_ru; 
+					$lTitle = $this->pRegionTitle; 
 					$lAdverTitle = $this->pAdvertiseTitle;                    
 					break;
 				default:
@@ -232,7 +232,7 @@
 							<li class="list-group-item list-group-item-info"><p>' . $lAdverTitle . '</p><p><span class="badge">' . 
 							$lTitle . '</span></p></li><li class="list-group-item list-group-item-warning ">~' . $lLocalPrice . 
 							' UAH<button type="submit" name="getBookmark" value="' . $this->pIdBookmark . '"   class="btn btn-danger btn-xs pull-right">' . $lLink . '</button></li></ul></div>';*/
-				$result = sprintf("<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3\"><ul class=\"list-group storefronItem\"><li class=\"list-group-item list-group-item-info\"><p>%s</p><p><span class=\"badge\">%s</span></p></li><li class=\"list-group-item list-group-item-warning \">~%s UAH<button type=\"submit\" name=\"getBookmark\" value=\"%s\"   class=\"btn btn-danger btn-xs pull-right\">%s</button></li></ul></div>", $lAdverTitle, $lTitle, $lLocalPrice, $this->pIdBookmark,$lLink  );
+				$result = sprintf("<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3\"><form id=\"frmBookmarkId%s\" ><ul class=\"list-group storefronItem\"><li class=\"list-group-item list-group-item-info\"><p>%s</p><p><span class=\"badge\">%s</span></p></li><li class=\"list-group-item list-group-item-warning \">~%s UAH<button type=\"submit\" name=\"getBookmark\" value=\"%s\"   class=\"btn btn-danger btn-xs pull-right\">%s</button></li></ul></div>",$this->pIdBookmark, $lAdverTitle, $lTitle, $lLocalPrice, $this->pIdBookmark,$lLink  );
 				return $result;			
 			 }
 	   

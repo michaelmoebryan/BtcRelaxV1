@@ -27,7 +27,7 @@
 			return $result;
 		}
 		
-			private function getFindSql(BookmarkSearchCriteria $search = null) {
+                private function getFindSql(BookmarkSearchCriteria $search = null) {
 			   //TODO: Revork for bookmark entity  
 				
 				$sql = 'SELECT IdBookmark, CreateDate, IdOrder, Quantity, EndDate,Latitude, Longitude, Link, Description, RegionTitle,  '

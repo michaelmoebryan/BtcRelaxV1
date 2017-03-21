@@ -14,11 +14,7 @@ use Exception;
 use PDO;
 
 require 'amI.php';
-/**
- * Description of am
- *
- * @author Chronos
- */
+
 class AM implements IAM {
     protected $root_user_id;
     protected $isAllowFreeRegistration;

@@ -30,7 +30,7 @@ Class Log {
     { 
     $date = date('d.m.Y h:i:s'); 
     $log = $msg."   |  Date:  ".$date."\n"; 
-    error_log($msg."   |  Tarih:  ".$date . $msg.PHP_EOL, 3, self::GENERAL_ERROR_DIR); 
+    error_log($msg."   |  :  ".$date . $msg.PHP_EOL, 3, self::GENERAL_ERROR_DIR); 
     } 
 
 } 

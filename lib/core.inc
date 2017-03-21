@@ -5,6 +5,7 @@ use BtcRelax\Flash;
 use BtcRelax\NotFoundException;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\SecureSession;
+use BtcRelax\Log;
 
 
 	
@@ -29,6 +30,7 @@ use BtcRelax\SecureSession;
 		'BtcRelax\Mapping\CustomerMapper' => '/mapping/CustomerMapper.php',
 		'BtcRelax\Model\Bookmark' => '/model/bookmark.php',
 		'BtcRelax\Model\Customer' => '/model/customer.php',
+                'BtcRelax\Model\Order' => '/model/order.php',
 		'BtcRelax\Validation\BookmarkValidator' => '/validation/BookmarkValidator.php',
 		'BtcRelax\Validation\CustomerValidator' => '/validation/CustomerValidator.php',
 		'BtcRelax\Validation\ValidationError' => '/validation/ValidationError.php',
@@ -38,33 +40,59 @@ use BtcRelax\SecureSession;
 		'BtcRelax\Dhtmlx' => '/dhtmlx.inc',
 		'BtcRelax\SecureSession' => '/SecureSession.php',
                 'BtcRelax\AM' => '/am.php',
+                'BtcRelax\OM' => '/om.php',
                 'BtcRelax\User' => '/usr.php',
+                'BtcRelax\Log' => '/logger.php'
 	];
     
-        private $current_session ;
-        //public $am_instance;
+        protected $current_session;
+        protected $root_user_id;
+        protected $isAllowFreeRegistration;
+        protected $host_name;
+        public $am_instance;
+        public $om_instance;
         public $state;
+        public $logger;
+        public $version;
         
 	public function __construct() {    
-
+            require 'logger.php';
+            $this->version = '0.0.0.1';
+            $this->host_name = filter_input(INPUT_SERVER, "HTTP_HOST");
+            $this->logger = new Log();            
         }
-	/**
-	 * System config.
-	 */
+
 	public function init() {
 		// error reporting - all errors for development (ensure you have display_errors = On in your php.ini file)
 		error_reporting(E_ALL | E_STRICT);
 		mb_internal_encoding('UTF-8');
 		set_exception_handler([$this, 'handleException']);
-		spl_autoload_register([$this, 'loadClass']);	               
+		spl_autoload_register([$this, 'loadClass']);
+                
+                $config = Config::getConfig($this->host_name);
+                $this->root_user_id = $config['HUB_ROOT']; 
+                $this->isAllowFreeRegistration = $config['IS_FREE_REGISTER'];
+                
+                /// Load managers
+                //
+                $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
+                $this->om_instance = new OM();
 //                $config = Config::getConfig('customize');
-//                $this->am_instance = new AM($config['HUB_ROOT'],$config['IS_FREE_REGISTER']);
                 $cur_session = new \BtcRelax\SecureSession();
                 $cur_session->init();
                 $this->current_session = $cur_session;
         }
         
-	
+	public function getAM()
+        {
+            return $this->am_instance;
+        }
+        
+        public function getOM()
+        {
+            return $this->om_instance;
+        }
+        
 	public function setBitId($vBitId)
 	{
             //if ($this->current_session->hasCustomer() === false && $vBitId !== null) {
@@ -100,17 +128,23 @@ use BtcRelax\SecureSession;
         public function getUser()
 	{
             $result = null;
-            $cust = $this->current_session->getCustomer();
-            if (isset($cust))
+            try
             {
-                $cUser = new \BtcRelax\User();
-                $cUser->init($cust->getIdCustomer());
-                $result = $cUser;                
+                $cust = $this->current_session->getCustomer();
+                if (isset($cust))
+                {
+                    $cUser = new User();
+                    $cUser->init($cust->getIdCustomer());
+                    $result = $cUser;                
+                }   
+            }
+            catch (Exception $ex)
+            {
+                $this->logger->general('Error while getting user:' . $ex->getMessage());
             }
             return $result;
         }
-        
- 
+
         public function killSession()
         {
             $this->current_session->killSession();
@@ -163,22 +197,25 @@ use BtcRelax\SecureSession;
 	 
 	public function run() {
 	$nonce = Utils::tryGetParam('nonce');
-        //$nonce = $this->current_session->getValue('nonce');		
-        if (($nonce !== false) && (!empty($nonce)))
-		{
-                    $dao = new DAO();                   
-                    $addr = $dao->address($nonce, @$_SERVER['REMOTE_ADDR']);
-                    if (isset($addr))
+        $getBookmarkVar = Utils::tryGetParam('getBookmark');		
+        $extraParams = array();
+            if (($nonce !== false) && (!empty($nonce)))
                     {
-			$this->setBitid($addr);
-                    }
-		}
-		$this->runPage($this->getPage());
+                        $dao = new DAO();                   
+                        $addr = $dao->address($nonce, @$_SERVER['REMOTE_ADDR']);
+                        if (isset($addr))
+                        {
+                            $this->setBitid($addr);
+                        }
+                    };
+            if (isset($getBookmarkVar) && (is_numeric($getBookmarkVar)))
+            {                    
+                $extraParams =  array ('getBookmark'=>$getBookmarkVar);
+            }
+	$this->runPage($this->getPage(),$extraParams);
 	}
 
-	/**
-	 * Exception handler.
-	 */
+
 	public function handleException($ex) {
 		$extra = ['message' => $ex->getMessage()];
 		switch ($ex) {
@@ -197,9 +234,6 @@ use BtcRelax\SecureSession;
  
 	}
 
-	/**
-	 * Class loader.
-	 */
 	public function loadClass($name) {
 		if (!$this->TryToAutoload($name))
 			{
@@ -263,7 +297,8 @@ use BtcRelax\SecureSession;
 	{
             try
             {
-                $this->current_session->logMessage($error);
+                $this->logger->general($error);
+                //$this->current_session->logMessage($error);
             }
             catch (Exception $exc)
             {
@@ -280,8 +315,6 @@ use BtcRelax\SecureSession;
 		return $_SERVER['DOCUMENT_ROOT'] . self::PAGE_DIR . $page . '.phtml';
 	}
 
-        
-        
 	private function hasScript($page) {
 		return file_exists($this->getScript($page));
 	}

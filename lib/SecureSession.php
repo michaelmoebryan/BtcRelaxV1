@@ -204,15 +204,14 @@ final class SecureSession {
             try
             {
                 $date = date('d/m/Y h:i:s a', time());
-		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/session.log");
+		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/global.log");
             }
             catch (Exception $ex)
             {
                 throw new Exception('Critical permissions, denied!!!');
             }
         }
-    
-    
+ 
     public static function allStatuses() {
         return [
             self::STATUS_UNAUTH,
