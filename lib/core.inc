@@ -25,9 +25,12 @@ use BtcRelax\Log;
 		'BtcRelax\BaseDao' => '/dao/BaseDao.php',
 		'BtcRelax\BookmarkDao' => '/dao/BookmarkDao.php',
 		'BtcRelax\Dao\BookmarkSearchCriteria' => '/dao/BookmarkSearchCriteria.php',
-		'BtcRelax\CustomerDao' => '/dao/CustomerDao.php',
+		'BtcRelax\OrderDao' => '/dao/OrderDao.php',
+                'BtcRelax\Dao\OrderSearchCriteria' => '/dao/OrderSearchCriteria.php',
+                'BtcRelax\CustomerDao' => '/dao/CustomerDao.php',
 		'BtcRelax\Mapping\BookmarkMapper' => '/mapping/BookmarkMapper.php',
 		'BtcRelax\Mapping\CustomerMapper' => '/mapping/CustomerMapper.php',
+                'BtcRelax\Mapping\OrderMapper' => '/mapping/OrderMapper.php',
 		'BtcRelax\Model\Bookmark' => '/model/bookmark.php',
 		'BtcRelax\Model\Customer' => '/model/customer.php',
                 'BtcRelax\Model\Order' => '/model/order.php',
@@ -78,7 +81,7 @@ use BtcRelax\Log;
                 $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
                 $this->om_instance = new OM();
 //                $config = Config::getConfig('customize');
-                $cur_session = new \BtcRelax\SecureSession();
+                $cur_session = new \BtcRelax\SecureSession($this->root_user_id);
                 $cur_session->init();
                 $this->current_session = $cur_session;
         }
@@ -120,6 +123,35 @@ use BtcRelax\Log;
             return $this->current_session->getBitid();
 	}    
 
+        public function getSelectedBookmark()
+        {
+            $result = null;
+            $selectedBookmarkId = $this->current_session->getValue('selectedBookmarkId');
+            if ($selectedBookmarkId != null)
+            {
+                $bookmarkDao = new BookmarkDao();
+                $result  = $bookmarkDao->findById($selectedBookmarkId);
+            
+            }
+            return $result;
+        }
+        
+        public function setCurrentOrder(\BtcRelax\Model\Order $order)
+        {
+            $this->current_session->setVal('currentOrder',$order);
+        }
+        
+        public function getCurrentOrder()
+        {
+            $result = $this->current_session->getVal('currentOrder');
+            return $result;
+        }
+        
+        public function clearSelectedBookmark()
+        {
+          $this->current_session->clearValue('selectedBookmarkId');  
+        }
+        
 	public function getCustomer()
 	{
             return $this->current_session->getCustomer();
@@ -210,7 +242,8 @@ use BtcRelax\Log;
                     };
             if (isset($getBookmarkVar) && (is_numeric($getBookmarkVar)))
             {                    
-                $extraParams =  array ('getBookmark'=>$getBookmarkVar);
+                $this->current_session->setVal('selectedBookmarkId',$getBookmarkVar);
+                //$extraParams =  array ('getBookmark'=>$getBookmarkVar);
             }
 	$this->runPage($this->getPage(),$extraParams);
 	}

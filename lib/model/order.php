@@ -14,17 +14,40 @@ class Order {
     private $pState = self::STATUS_CREATED;
     private $pBTCPrice;
     private $pInvoiceAddress;
-
-    public function __construct() {
-        
-        
-    }
+    private $pSaller;
+    private $pCreator;
     
-    function getIdOrder()
+    public function __construct($pBTCPrice, $pCreator) {
+        $this->pBTCPrice = $pBTCPrice;
+        $this->pCreator = $pCreator;
+    }
+
+        function getSaller() {
+        return $this->pSaller;
+    }
+
+    public function setSaller($pSaller) {
+        $this->pSaller = $pSaller;
+    }
+
+        
+    function getState() {
+        return $this->pState;
+    }
+
+    public function setState($pState) {
+        $this->pState = $pState;
+    }
+
+        function getIdOrder()
     {
         return $this->pIdOrder;
     }
     
+    public function setIdOrder($pIdOrder) {
+        $this->pIdOrder = $pIdOrder;
+    }
+
     
                              
     function getCreateDate ()

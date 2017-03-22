@@ -19,6 +19,12 @@
 			$uh=$vBegin.'*'.$vEnd;
 			return $uh;
 		}
+                
+                public function getCustomerId() {
+                    return $this->customer->getIdCustomer();
+                }
+
+                                
 		public function RegisterNewUserId($id){
 			$custDao=new CustomerDao();
 			$result=$custDao->registerUserId($id);

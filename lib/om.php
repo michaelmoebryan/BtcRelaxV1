@@ -2,11 +2,13 @@
 
 namespace BtcRelax;
 
-use BtcRelax\Model\Bookmark;
-use BtcRelax\Config;
-use BtcRelax\User;
 use Exception;
 use PDO;
+use BtcRelax\Model\Bookmark;
+use BtcRelax\OrderDao;
+use BtcRelax\Model\Order;
+use BtcRelax\Config;
+use BtcRelax\User;
 
 require 'omI.php';
 
@@ -14,46 +16,56 @@ class OM implements IOM {
     //put your code here
     
     
-    public function CreateNewOrder($user, $bookmark) {
+    public function CreateNewOrder(\BtcRelax\User $user, \BtcRelax\Model\Bookmark $bookmark) {
        // TODO: By default think that UAH but need to extend for any currency  
         $vUAHPrice = $bookmark->getCustomPrice();
         $vBTCPrice = GetBTCPriceByUAH($vUAHPrice);
-
+        $result = new Model\Order($vBTCPrice, $user->getCustomerId());
+        return $result;        
     }
 
     public function getOrderById($orderId) {
         
     }
 
-    public function getOrdersByUser($userId, $onlyActive = fasle) {
-        
-    }
-   
-    private function TryToGetBookmarkId($pBookMarkId)
-    {
-			$resultMessage = "Error";
-			  if (GetDbConnector($dbCon))
-			  {
-				  $callQuery = "CALL `AttachPointToOrder`(?, ?, @pResultId)";
-				  $call = $dbCon->prepare($callQuery);
-				  $call->bind_param('ii', $this->pOrderId, $pBookMarkId);
-				  $call->execute();
-
-				  $select = $dbCon->query("SELECT  @pResultId");
-				  $result = $select->fetch_assoc();
-				  $pResultId    = $result['@pResultId'];
-				  if ( $pResultId == 100)
-				  {
-					$resultMessage = null;
-				  }
-				  else
-				  {
-					$resultMessage =   $pResultId;                    
-				  }
-			  }
-			  return $resultMessage;       
+    public function getOrdersByUser(\BtcRelax\User $user, $pOnlyActive = true) {
+        $result = null;
+        $orderSearchCriteria = new \BtcRelax\Dao\OrderSearchCriteria(null, $user->getCustomerId(),$pOnlyActive );
+        $dao = new \BtcRelax\OrderDao();
+        $activeOrder = $dao->find($orderSearchCriteria);
+        if ($activeOrder != null) 
+        {
+            $result = $activeOrder;
+        }
+        return $result;
     }
     
+   
+//    private function TryToGetBookmarkId($pBookMarkId)
+//    {
+//			$resultMessage = "Error";
+//			  if (GetDbConnector($dbCon))
+//			  {
+//				  $callQuery = "CALL `AttachPointToOrder`(?, ?, @pResultId)";
+//				  $call = $dbCon->prepare($callQuery);
+//				  $call->bind_param('ii', $this->pOrderId, $pBookMarkId);
+//				  $call->execute();
+//
+//				  $select = $dbCon->query("SELECT  @pResultId");
+//				  $result = $select->fetch_assoc();
+//				  $pResultId    = $result['@pResultId'];
+//				  if ( $pResultId == 100)
+//				  {
+//					$resultMessage = null;
+//				  }
+//				  else
+//				  {
+//					$resultMessage =   $pResultId;                    
+//				  }
+//			  }
+//			  return $resultMessage;       
+//    }
+//    
     function GetBTCPriceByUAH($pUAHPrice)
     {
         $vRate = GetRateBy_btcbank();

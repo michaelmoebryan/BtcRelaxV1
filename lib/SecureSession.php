@@ -7,7 +7,7 @@ use BtcRelax\Config;
 use BtcRelax\DAO;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
-
+use Exception;
 
 final class SecureSession {
 
@@ -24,9 +24,10 @@ final class SecureSession {
     private $timeout = 3600;
     private $customer = null;
     private $nonce = null;
+    private $rootUserId;
 
-    public function __constructor() {
-        
+    public function __constructor($rootUserId) {
+        $this->rootUserId = $rootUserId;
     }
     
     public function init()
@@ -57,7 +58,7 @@ final class SecureSession {
 
     public function setNonce($nonce) {
         $this->setVal('nonce', $nonce);
-        \BtcRelax\SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce));
+        //\BtcRelax\SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce));
         
     }
 
@@ -108,8 +109,8 @@ final class SecureSession {
 
         $dao = new DAO();
         
-        $dao->insert($nonce, $_SERVER['REMOTE_ADDR']);
-        return array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri );
+        $dao->insert($nonce, filter_input(INPUT_SERVER ,'REMOTE_ADDR'));
+        return ['bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri];
     }
 
     public function hasBitid() {
@@ -166,12 +167,17 @@ final class SecureSession {
             return null;
         }
     }
+    
+    public function clearValue($session)
+    {
+        unset($_SESSION[$session]);
+    }
 
     public function killSession() {
         $_SESSION = array();
         // If it's desired to kill the session, also delete the session cookie.
         // Note: This will destroy the session, and not just the session data!
-        if (isset($_COOKIE[session_name()])):
+        if (filter_input(INPUT_COOKIE, session_name())):
             setcookie(session_name(), '', time() - 7000000, '/');
         endif;
         \session_destroy();
@@ -192,10 +198,10 @@ final class SecureSession {
         openssl_pkey_export($res, $privKey);
 
         // Extract the public key from $res to $pubKey
-        $pubKey = openssl_pkey_get_details($res);
-        $pubKey = $pubKey["key"];
+        $pubKey = openssl_pkey_get_details($res)["key"];
+        //$pubKey = $pubKey["key"];
 
-        $result = array('PrivateKey' => $privKey, 'PublicKey' => $pubKey);
+        $result = ['PrivateKey' => $privKey, 'PublicKey' => $pubKey];
         return $result;
     }
     
@@ -204,11 +210,11 @@ final class SecureSession {
             try
             {
                 $date = date('d/m/Y h:i:s a', time());
-		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/global.log");
+		\error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/global.log");
             }
             catch (Exception $ex)
             {
-                throw new Exception('Critical permissions, denied!!!');
+                throw new Exception(sprintf('Critical permissions, denied! Error:%s', $ex->getMessage()));
             }
         }
  
@@ -226,8 +232,7 @@ final class SecureSession {
         $result = self::STATUS_UNAUTH;
         if ($this->hasCustomer()) {
             $customerId = $this->getCustomer()->getIdCustomer();
-            $config = Config::getConfig('customize');
-            if ($customerId === $config['HUB_ROOT']) {
+            if ($customerId === $this->rootUserId) {
                 $result = self::STATUS_ROOT;
             } else {
                 $result = self::STATUS_USER;

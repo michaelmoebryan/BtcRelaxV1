@@ -1,18 +1,17 @@
 /*
--- Query: SELECT * FROM Ident.Idetities
+-- Query: SELECT * FROM bitghluk_prod_v2.Idetities
 LIMIT 0, 1000
 
--- Date: 2017-01-10 19:00
+-- Date: 2017-03-16 19:56
 */
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-05 07:13:48',8,'bitid','1Fk8Q3LWcEaqcfpQp6Zv4jNJwdUMutttmN',NULL,'1b2608a4da5c63f4339fa04d675d74ba');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-05 07:13:48',9,'email','godchronos@tuta.io',NULL,'1b2608a4da5c63f4339fa04d675d74ba');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:16:50',10,'bitid','1KbLufXfQpVDUdmN4AUgFmbE1cLoLx1sTW',NULL,'1KbLufXfQpVDUdmN4AUgFmbE1cLoLx1sTW');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:16:50',11,'email','nightvision@tutanota.com',NULL,'1KbLufXfQpVDUdmN4AUgFmbE1cLoLx1sTW');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:43',14,'bitid','171miEz5BSe7EkjvAQ5grL9BG5KQrZBrCW',NULL,'13KqFs1rdkLNwrUNajis1MhTSC45gGTkWz');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:43',15,'email','morfeu@tutanota.com',NULL,'13KqFs1rdkLNwrUNajis1MhTSC45gGTkWz');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:45',16,'bitid','1ALYCGieudcU84u2tR1QzeddpQ1AcAPfT2',NULL,'1ALYCGieudcU84u2tR1QzeddpQ1AcAPfT2');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:45',17,'email','mastergoda@tutanota.com',NULL,'1ALYCGieudcU84u2tR1QzeddpQ1AcAPfT2');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:48',18,'bitid','1JBoPXoXFjtzWhJxLFivu5Cu1u5ZoByw3u',NULL,'1JBoPXoXFjtzWhJxLFivu5Cu1u5ZoByw3u');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:48',19,'email','lost-pufik@mail.ru',NULL,'1JBoPXoXFjtzWhJxLFivu5Cu1u5ZoByw3u');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:50',20,'bitid','1D1CBoeiky4KGEp9RPRH91TXWuwB3U2bc6',NULL,'1D1CBoeiky4KGEp9RPRH91TXWuwB3U2bc6');
-INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2016-01-07 18:17:50',21,'email','anorakh@rambler.ru',NULL,'1D1CBoeiky4KGEp9RPRH91TXWuwB3U2bc6');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-15 10:27:08',8,'bitid','12b2M5LDmcAuS2mbq4UbYbejhMMhKEmHEV',NULL,'12b2M5LDmcAuS2mbq4UbYbejhMMhKEmHEV');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-15 11:21:12',9,'bitid','1Q85Vo7DeisnsaesbVUuUhpUutmZYoYtWF',NULL,'1Q85Vo7DeisnsaesbVUuUhpUutmZYoYtWF');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-15 14:56:24',10,'bitid','19a32DgpqzizaNupTyd5rdPqCQy5LKxD2f',NULL,'19a32DgpqzizaNupTyd5rdPqCQy5LKxD2f');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-17 05:30:46',12,'bitid','1K1BqHnzP4P6DVW4NyBbP42vzdB48udVB9',NULL,'1K1BqHnzP4P6DVW4NyBbP42vzdB48udVB9');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-17 19:26:16',13,'bitid','1LZJcA84QCuZFUMiR1S6grxLXeAaHDkwt8',NULL,'1LZJcA84QCuZFUMiR1S6grxLXeAaHDkwt8');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-22 06:38:31',14,'bitid','1718hh68J9naTaLALoacUvb67FjNmu5f6o',NULL,'1718hh68J9naTaLALoacUvb67FjNmu5f6o');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-25 04:39:03',17,'bitid','17KGyt4wxUfYWyPWidxeoTsDWaaModjZQ8',NULL,'17KGyt4wxUfYWyPWidxeoTsDWaaModjZQ8');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-02-25 17:21:56',18,'bitid','16kn31u215fV4buzY3AdGErRJ99N2mRjWf',NULL,'16kn31u215fV4buzY3AdGErRJ99N2mRjWf');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-03-01 09:53:33',19,'bitid','1Ki8P4Zhh2fMmWLLuM8Kt41R5FYUNaFHbU',NULL,'1Ki8P4Zhh2fMmWLLuM8Kt41R5FYUNaFHbU');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-03-11 16:29:08',20,'bitid','18akCAsBttLAfgZwS7fLNhvvfZLig1vDXM',NULL,'18akCAsBttLAfgZwS7fLNhvvfZLig1vDXM');
+INSERT INTO `Idetities` (`CreateDate`,`idIdentity`,`IdentTypeCode`,`IdentityKey`,`EndDate`,`idCustomer`) VALUES ('2017-03-15 01:07:59',21,'bitid','1KYzowDyengZdHT3GdeJEQu8gi4bkYpdT8',NULL,'1KYzowDyengZdHT3GdeJEQu8gi4bkYpdT8');
