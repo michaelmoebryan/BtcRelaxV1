@@ -3,7 +3,6 @@
 function doOnLoad()
 {
     App.init();
-    App.runui();
 }
 
 function doOnUnload()
@@ -13,36 +12,16 @@ function doOnUnload()
 
 function updateSessionState(newstate)
 {
-   App.set_state(newstate); 
+   var sess_id = 0;
+    App.set_state(newstate, sess_id); 
 }
 
 function btnPush()
 {
-    var btnPS = new Audio();
-    btnPS.src = "/js/app/open.mp3";
-    btnPS.play();
-    let vIsWinVisible = $(document.getElementById('copobanId')).is(':visible');
-       
-    if (vIsWinVisible === true)
+    if (!App.vAuthBusy)
     {
-//        $(this).animate({left:"-10px",top:"-10px", opacity: 0.5, zoom: 0.5 }, "slow", function() {
-            App.hideLoginWindow();
-            $('#idMainButton').switchClass("logo_auth","logo_unauth");
-            
-//        });
-
-    } else
-    {
-         $('#idMainButton').switchClass("logo_unauth","logo_auth");
-                 //removeClass("logo_unauth",3000).addClass("logo_auth",3000);
-//        let vSelf = $(document.getElementById('idMainButton'));
-//        vSelf.animate({
-//            left: '50%',
-//            top: '50%',
-//            opacity: '0,5'
-//        }, "slow");
-        App.showLoginWindow();
-
+        App.playClick();
+        App.logoBtnClick();   
     }
 }
 
@@ -66,8 +45,35 @@ function killSession()
             });
 
 }
-;
 
+function createNewUser()
+{
+    $(document.getElementById('dialog')).parent().hide("slow");
+    App.createUsr();
+                            // Need to reload page
+                    // Try in future
+//            $.ajax({
+//                  url: "#",
+//                    context: document.body,
+//                    success: function(s,x){
+//                            $(this).html(s);
+//                        }
+//                    });
+
+              // Perform other work here ...
+}
+
+function userCreateResult(res)
+{
+    if (res == true)
+    {
+        App.showRegisterOk();
+    }
+    else
+    {
+        App.showRegisterFail();
+    }
+}
 
 function saveWinPos(win)
 {
@@ -76,3 +82,20 @@ function saveWinPos(win)
 }
 
 
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)===' ') c = c.substring(1);
+        if (c.indexOf(name) === 0) return c.substring(name.length,c.length);
+    }
+    return null;
+}

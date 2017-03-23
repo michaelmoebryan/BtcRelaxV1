@@ -1,51 +1,62 @@
-<div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front ui-dialog-buttons ui-draggable ui-resizable" aria-describedby="dialog" aria-labelledby="ui-id-18" style="position: absolute; height: auto; width: 400px; top: 1317.5px; left: 747px; display: block;">
-    <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix ui-draggable-handle">
-        <span id="ui-id-18" class="ui-dialog-title">Уважаемый аноним!</span>
-        <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
-            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
-            <span class="ui-button-icon-space"> 
-            </span>Close
-        </button>
-    </div>
-    <div id="dialog" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 2px; max-height: none; height: auto;">
-        <p></p>
-    </div>
-    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-        <div class="ui-dialog-buttonset">
-            <button type="button" class="ui-button ui-corner-all ui-widget">Ok</button>
-            <button type="button" class="ui-button ui-corner-all ui-widget">Cancel</button>
+<?php 
+    if ($registerResult == null )
+    {
+?>
+    <form id="frmPage" action="#"  method="post">
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front 
+         ui-dialog-buttons ui-draggable" aria-describedby="dialog" aria-labelledby="ui-id-18" 
+         style="position: absolute; height: auto; width: 400px; top: 1317.5px; left: 747px; display: block;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix ui-draggable-handle">
+            Уважаемый АНОНИМ!        
+        </div>    
+        <div id="dialog" class="ui-dialog-content ui-widget-content" 
+             style="width: auto; min-height: 2px; max-height: none; height: auto;">
+            <p>
+             Ваша регистрация, будет завершена после нажатия кнопки ОК.  
+            </p>
+            <p><strong>Создайте резервную копию кошелька!</strong></p>
         </div>
+        <input type="hidden" name="action" value="createUser" />
+        <div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div>
+        <div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div>
+        <div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;">
+
+        </div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div>
+        <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;">
+
+        </div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div>
+        <div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div>
+        <div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div>
+
     </div>
-    <div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div>
-    <div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div>
-    <div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;">
+    <script>              
+        $("#dialog").dialog({
+            title: "Уважаемый аноним!",
+            resizable: false,
+            beforeClose: function(event, ui) { 
+                   btnPush();
+                },
+            autoOpen: false,
+            buttons: [
+                {
+                    text: "Ok!",
+                    click: function () {
+                        createNewUser();           
+                    }
+                }
+            ]
+        });
+    </script>
+    </form>
+<?php 
+    }
+    else { ?>
+           <script>
+			$( document ).ready( function() {
+                               userCreateResult('<?php  echo($registerResult); ?>'); 
+                            });
+	
+            </script>    
+<?php    }
+?>
 
-    </div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div>
-    <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;">
-
-    </div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div>
-    <div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div>
-    <div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div>
-
-</div>
-
-<script>
-$( "#dialog" ).dialog({
-	autoOpen: false,
-	width: 400,
-	buttons: [
-		{
-			text: "Ok",
-			click: function() {
-				$( this ).dialog( "close" );
-			}
-		},
-		{
-			text: "Cancel",
-			click: function() {
-				$( this ).dialog( "close" );
-			}
-		}
-	]
-});
-</script>
