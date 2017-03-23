@@ -1,8 +1,8 @@
 <?php
     global $core;
-    if (($curentOrder === null)&&(isset($currentOrder))) {
+    if ($curentOrder === null) {
         echo '<h1>Актаульные закладки на данный момент!</h1>';
         echo \BtcRelax\renderGetActiveBookmarks();
-} else {
-    echo \BtcRelax\renderActiveOrder($currentOrder);
-}
+    } else {
+        echo \BtcRelax\renderActiveOrder($currentOrder);
+    }
