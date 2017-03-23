@@ -1,6 +1,6 @@
 <?php
     global $core;
-    if ($curentOrder == null) {
+    if (($curentOrder === null)&&(isset($currentOrder))) {
         echo '<h1>Актаульные закладки на данный момент!</h1>';
         echo \BtcRelax\renderGetActiveBookmarks();
 } else {

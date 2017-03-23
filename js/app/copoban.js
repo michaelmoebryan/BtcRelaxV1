@@ -3,6 +3,7 @@
 function doOnLoad()
 {
     App.init();
+    App.runui();
 }
 
 function doOnUnload()
