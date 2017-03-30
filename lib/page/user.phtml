@@ -1,8 +1,72 @@
 <?php
     global $core;
+    $curentOrder  = $core->getCurrentOrder();
     if ($curentOrder === null) {
         echo '<h1>Актаульные закладки на данный момент!</h1>';
         echo \BtcRelax\renderGetActiveBookmarks();
     } else {
-        echo \BtcRelax\renderActiveOrder($currentOrder);
+        switch ($curentOrder->getState()) { 
+            case 'Created':
+                ?>
+                <form id="frmConfirmOrder" action="#"  method="post">
+                    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front 
+                         ui-dialog-buttons ui-draggable" aria-describedby="dialog" aria-labelledby="ui-id-18" 
+                         style="position: absolute; height: auto; width: 400px; top: 1317.5px; left: 747px; display: block;">
+                        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix ui-draggable-handle"></div>    
+                            <div id="dialog" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 2px; max-height: none; height: auto;">
+                            <p>Согласно текущего курса, цена выбраной Вами закладки, в биткоинах будет составлять:</p>
+                            <p><i class="fa fa-btc"></i><strong><?php echo( $curentOrder->getBTCPrice() ); ?></strong></p>
+                            <div class="alert alert-danger"><p><strong>Убедительная просьба, не подтверждать заказ если у Вас в наличии нет необходимого количества биткоинов!</strong></p></div>
+                            </div>
+                            <input id="orderConfirmator" type="hidden" name="isConfirmed" value="false">
+                        <div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;">
+                        </div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;">
+                        </div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div>
+                    </div>
+                    <script>              
+                        $("#dialog").dialog({
+                            title: "Внимание!",
+                            resizable: false,
+                            modal: true,
+                            show: {
+                                effect: "blind",
+                                duration: 1000
+                                },
+                            hide: {
+                                effect: "explode",
+                                duration: 1000
+                            },
+                            beforeClose: function(event, ui) { 
+                                    confirmOrder(false);
+                                },
+                            autoOpen: false,
+                            buttons: [
+                                {
+                                    text: "Покупаю!",
+                                    click:  function() {
+                                        confirmOrder(true); 
+                                    }
+                                },
+                                {
+                                    text: "Отмена",
+                                    click: function() {
+                                         confirmOrder(false); 
+                                    }
+                                }
+                            ]
+                        });
+                    </script>
+                    </form>
+               <?php
+                break;
+
+            default:
+                break;
+        }
+        
     }

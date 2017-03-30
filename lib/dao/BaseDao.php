@@ -11,7 +11,7 @@
 	
 	class BaseDao
 	{
-		private $db = null;
+		protected $db = null;
 
 
 		public function __destruct() {

@@ -57,17 +57,17 @@ final class SecureSession {
 
 
     public function setNonce($nonce) {
-        $this->setVal('nonce', $nonce);
-        //\BtcRelax\SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce));
+        $this->setValue('nonce', $nonce);
+        SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce));
         
     }
 
     public function setBitid($bitid) {
-        $this->setVal("bitid", $bitid);
+        $this->setValue("bitid", $bitid);
     }
 
     public function setCustomer($customer) {
-        $this->setVal("customer", $customer);
+        $this->setValue("customer", $customer);
     }
 
     public function getNonce() {
@@ -96,21 +96,21 @@ final class SecureSession {
         $server_url = $config['SERVER_URL'];
 
         $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
-        $this->setVal('bitid_uri', $bitid_uri);
+        $this->setValue('bitid_uri', $bitid_uri);
 
         $qr_uri = $bitid->qrCode($bitid_uri);
-        $this->setVal('qr_uri', $qr_uri);
+        $this->setValue('qr_uri', $qr_uri);
 
         $ajax_uri = $server_url . 'ajax.php';
-        $this->setVal('ajax_uri', $ajax_uri);
+        $this->setValue('ajax_uri', $ajax_uri);
 
         $user_uri = Utils::createLink('user');
-        $this->setVal('user_uri', $user_uri);
+        $this->setValue('user_uri', $user_uri);
 
         $dao = new DAO();
         
-        $dao->insert($nonce, filter_input(INPUT_SERVER ,'REMOTE_ADDR'));
-        return ['bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri];
+        $dao->insert($nonce, $_SERVER['REMOTE_ADDR']);
+        return array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri );
     }
 
     public function hasBitid() {
@@ -144,7 +144,7 @@ final class SecureSession {
         return FALSE;
     }
 
-    public function setVal($session, $value) {
+    public function setValue($session, $value) {
         if ($this->is_session_started()) {
             $_SESSION[$session] = $value;
             $_SESSION['last_active'] = time();
@@ -177,7 +177,7 @@ final class SecureSession {
         $_SESSION = array();
         // If it's desired to kill the session, also delete the session cookie.
         // Note: This will destroy the session, and not just the session data!
-        if (filter_input(INPUT_COOKIE, session_name())):
+        if (isset($_COOKIE[session_name()])):
             setcookie(session_name(), '', time() - 7000000, '/');
         endif;
         \session_destroy();
@@ -198,8 +198,8 @@ final class SecureSession {
         openssl_pkey_export($res, $privKey);
 
         // Extract the public key from $res to $pubKey
-        $pubKey = openssl_pkey_get_details($res)["key"];
-        //$pubKey = $pubKey["key"];
+        $pubKey = openssl_pkey_get_details($res);
+        $pubKey = $pubKey["key"];
 
         $result = ['PrivateKey' => $privKey, 'PublicKey' => $pubKey];
         return $result;
@@ -210,11 +210,11 @@ final class SecureSession {
             try
             {
                 $date = date('d/m/Y h:i:s a', time());
-		\error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/global.log");
+		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/global.log");
             }
             catch (Exception $ex)
             {
-                throw new Exception(sprintf('Critical permissions, denied! Error:%s', $ex->getMessage()));
+                throw new Exception('Critical permissions, denied!!!');
             }
         }
  

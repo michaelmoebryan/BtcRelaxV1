@@ -21,6 +21,5 @@
                                         }					
 			 } catch (PDOException $pe) {
 						die("Error occurred:" . $pe->getMessage());
-			 };    
+			 }
 
-?>

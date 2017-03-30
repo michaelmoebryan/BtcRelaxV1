@@ -1,18 +1,16 @@
 <?php
 namespace BtcRelax;
-
-use BtcRelax\Flash;
+require_once 'logger.php';
+use BtcRelax\Model\Order;
 use BtcRelax\NotFoundException;
-use BtcRelax\SessionExpiredException;
 use BtcRelax\SecureSession;
-use BtcRelax\Log;
+use BtcRelax\SessionExpiredException;
+use const E_STRICT;
 
 
-	
-	
     final class Core {
 
-	const DEFAULT_PAGE = 'shop';
+	const DEFAULT_PAGE = 'main';
 	const PAGE_DIR = '/lib/page/';
 	const LAYOUT_DIR = '/lib/layout/';
 
@@ -36,6 +34,7 @@ use BtcRelax\Log;
                 'BtcRelax\Model\Order' => '/model/order.php',
 		'BtcRelax\Validation\BookmarkValidator' => '/validation/BookmarkValidator.php',
 		'BtcRelax\Validation\CustomerValidator' => '/validation/CustomerValidator.php',
+                'BtcRelax\Validation\OrderValidator' => '/validation/OrderValidator.php',
 		'BtcRelax\Validation\ValidationError' => '/validation/ValidationError.php',
 		'BtcRelax\Utils' => '/utils/utils.php',
 		'BtcRelax\BitID' => '/BitID.php',
@@ -44,9 +43,11 @@ use BtcRelax\Log;
 		'BtcRelax\SecureSession' => '/SecureSession.php',
                 'BtcRelax\AM' => '/am.php',
                 'BtcRelax\OM' => '/om.php',
+                'BtcRelax\RE' => '/re.php',
                 'BtcRelax\User' => '/usr.php',
-                'BtcRelax\Log' => '/logger.php'
-	];
+                'BtcRelax\RestResponse' => '/RestResponse.php',
+                'BtcRelax\RestConnection' => '/RestConnection.php',
+           ];
     
         protected $current_session;
         protected $root_user_id;
@@ -54,15 +55,15 @@ use BtcRelax\Log;
         protected $host_name;
         public $am_instance;
         public $om_instance;
+        public $re_instance;
         public $state;
-        public $logger;
         public $version;
         
 	public function __construct() {    
-            require 'logger.php';
-            $this->version = '0.0.0.1';
+            //require '/logger.php';
+            $this->version = '0.0.0.2';
             $this->host_name = filter_input(INPUT_SERVER, "HTTP_HOST");
-            $this->logger = new Log();            
+        
         }
 
 	public function init() {
@@ -72,18 +73,25 @@ use BtcRelax\Log;
 		set_exception_handler([$this, 'handleException']);
 		spl_autoload_register([$this, 'loadClass']);
                 
-                $config = Config::getConfig($this->host_name);
-                $this->root_user_id = $config['HUB_ROOT']; 
-                $this->isAllowFreeRegistration = $config['IS_FREE_REGISTER'];
-                
-                /// Load managers
-                //
-                $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
-                $this->om_instance = new OM();
-//                $config = Config::getConfig('customize');
-                $cur_session = new \BtcRelax\SecureSession($this->root_user_id);
-                $cur_session->init();
-                $this->current_session = $cur_session;
+                try
+                {
+                    $config = Config::getConfig($this->host_name);
+                    $this->root_user_id = $config['HUB_ROOT']; 
+                    $this->isAllowFreeRegistration = $config['IS_FREE_REGISTER'];
+
+                    $this->re_instance = new RE();
+                    $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
+                    $this->om_instance = new OM();
+
+                    $cur_session = new SecureSession($this->root_user_id);
+                    $cur_session->init();
+                    $this->current_session = $cur_session;
+                }
+                catch (Exception $exc)
+                {
+                    Log::general(sprintf("Core initialization error: %s", $exc->getMessage()));
+                    throw $exc;
+                }
         }
         
 	public function getAM()
@@ -94,6 +102,11 @@ use BtcRelax\Log;
         public function getOM()
         {
             return $this->om_instance;
+        }
+        
+        public function getRE()
+        {
+            return $this->re_instance;
         }
         
 	public function setBitId($vBitId)
@@ -111,8 +124,8 @@ use BtcRelax\Log;
             } else {
                     $this->current_session->setBitid($vBitId);
                     return true;
-                    };
-            } else 
+                    }
+        } else 
             {
                 return false;
             }
@@ -136,22 +149,19 @@ use BtcRelax\Log;
             return $result;
         }
         
-        public function setCurrentOrder(\BtcRelax\Model\Order $order)
+        public function setCurrentOrder(Order $order = null)
         {
-            $this->current_session->setVal('currentOrder',$order);
+            $this->current_session->setValue('currentOrder',$order);
+            // Clear selected bookmark if we already have order
+            $this->current_session->clearValue('selectedBookmarkId');             
         }
         
         public function getCurrentOrder()
         {
-            $result = $this->current_session->getVal('currentOrder');
+            $result = $this->current_session->getValue('currentOrder');
             return $result;
         }
-        
-        public function clearSelectedBookmark()
-        {
-          $this->current_session->clearValue('selectedBookmarkId');  
-        }
-        
+               
 	public function getCustomer()
 	{
             return $this->current_session->getCustomer();
@@ -172,7 +182,7 @@ use BtcRelax\Log;
             }
             catch (Exception $ex)
             {
-                $this->logger->general('Error while getting user:' . $ex->getMessage());
+                Log::general('Error while getting user:' . $ex->getMessage());
             }
             return $result;
         }
@@ -231,7 +241,7 @@ use BtcRelax\Log;
 	$nonce = Utils::tryGetParam('nonce');
         $getBookmarkVar = Utils::tryGetParam('getBookmark');		
         $extraParams = array();
-            if (($nonce !== false) && (!empty($nonce)))
+        if (($nonce !== false) && (!empty($nonce)))
                     {
                         $dao = new DAO();                   
                         $addr = $dao->address($nonce, @$_SERVER['REMOTE_ADDR']);
@@ -239,12 +249,15 @@ use BtcRelax\Log;
                         {
                             $this->setBitid($addr);
                         }
-                    };
-            if (isset($getBookmarkVar) && (is_numeric($getBookmarkVar)))
-            {                    
-                $this->current_session->setVal('selectedBookmarkId',$getBookmarkVar);
-                //$extraParams =  array ('getBookmark'=>$getBookmarkVar);
-            }
+                    }
+        if (isset($getBookmarkVar) && (is_numeric($getBookmarkVar)))
+        {                    
+                $this->current_session->setValue('selectedBookmarkId',$getBookmarkVar);
+        }
+        if (isset($_REQUEST))
+        {
+            $extraParams = $_REQUEST;
+        }
 	$this->runPage($this->getPage(),$extraParams);
 	}
 
@@ -330,7 +343,7 @@ use BtcRelax\Log;
 	{
             try
             {
-                $this->logger->general($error);
+                Log::general($error);
                 //$this->current_session->logMessage($error);
             }
             catch (Exception $exc)

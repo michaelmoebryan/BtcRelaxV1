@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://wadl.dev.java.net/2009/02">
+  <doc xml:lang="en" title="https://api.cryptonator.com"/>
+  <resources base="https://api.cryptonator.com">
+    <resource path="api/ticker/btc-uah" id="Btc-uah">
+      <doc xml:lang="en" title="Btc-uah"/>
+      <method name="GET" id="BtcToUah">
+        <doc xml:lang="en" title="BtcToUah"/>
+        <request/>
+        <response status="200">
+          <representation mediaType="application/json"/>
+        </response>
+      </method>
+    </resource>
+  </resources>
+</application>

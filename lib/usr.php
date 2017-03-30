@@ -1,10 +1,11 @@
 <?php
 	namespace BtcRelax;
 	use BtcRelax\CustomerDao;
-	class User{
+        
+	class User {
 		private $customer;
-		public function __construct(){
-	}
+		public function __construct(){}
+                                
 		public function init($user_id){
 			$custDao=new CustomerDao();
 			$this->customer=$custDao->findById($user_id);
@@ -12,6 +13,7 @@
 				throw new NotFoundException('Critical error! Customer with Id "'.$user_id.'" was not found.');
 			}
 		}
+                
 		public function getUserHash(){
 			$cId=$this->customer->getIdCustomer();
 			$vEnd=substr($cId,-4,4);
@@ -23,6 +25,7 @@
                 public function getCustomerId() {
                     return $this->customer->getIdCustomer();
                 }
+
 
                                 
 		public function RegisterNewUserId($id){

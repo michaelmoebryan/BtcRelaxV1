@@ -161,9 +161,14 @@ var App = (function () {
                     break;
                 case 'USER':
                     $('#idMainButton').addClass('logo_auth').fadeIn('5000');
-                    $('#copobanId').addClass('front_shop_panel').slideUp('5000');
-                    $(document.getElementById('copobanId')).show('slow');
-                    
+                    if (document.getElementById('frmConfirmOrder') instanceof Object){
+                        $('#dialog').dialog('open');
+                    }
+                    else
+                    {
+                        $('#copobanId').addClass('front_shop_panel').slideUp('5000');
+                        $(document.getElementById('copobanId')).show('slow');                        
+                    };
                     break;
                 case 'ROOT':
                     $('#idMainButton').addClass('logo_auth').fadeIn('5000');

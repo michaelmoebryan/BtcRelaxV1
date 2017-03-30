@@ -3,7 +3,6 @@
 function doOnLoad()
 {
     App.init();
-    App.runui();
 }
 
 function doOnUnload()
@@ -45,6 +44,13 @@ function killSession()
                 //alert("Data: " + data + "\nStatus: " + status);
             });
 
+}
+
+function confirmOrder(isConfirmed)
+{
+    $(document.getElementById('dialog')).parent().hide("slow");
+    $(document.getElementById('orderConfirmator')).val(isConfirmed);
+    $("#frmConfirmOrder").submit(); 
 }
 
 function createNewUser()

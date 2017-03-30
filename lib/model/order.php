@@ -9,21 +9,56 @@ class Order {
   
     
     private $pIdOrder;
-    private $pCreateDate  ;
+    private $pCreateDate;
     private $pEndDate;
     private $pState = self::STATUS_CREATED;
     private $pBTCPrice;
     private $pInvoiceAddress;
     private $pSaller;
     private $pCreator;
+    private $pBookmarkId;
+    private $pLastError;
     
-    public function __construct($pBTCPrice, $pCreator) {
-        $this->pBTCPrice = $pBTCPrice;
-        $this->pCreator = $pCreator;
+    public function __construct($pBTCPrice = null, $pCreator = null, $pBookmarkId = null) {
+        if ($pBTCPrice !== null)
+        {
+            $this->pBTCPrice = round($pBTCPrice,8);
+        }
+        if ($pCreator !== null)
+        {
+            $this->pCreator = $pCreator;
+        }
+        if ($pBookmarkId !== null)
+        {
+            $this->pBookmarkId = $pBookmarkId;
+        }
     }
 
-        function getSaller() {
+    public static function allStatuses() {
+        return [
+            self::STATUS_CONFIRMED,
+            self::STATUS_CREATED
+        ];
+    }
+    
+    public function getLastError() {
+        return $this->pLastError;
+    }
+
+    public function setLastError($pLastError) {
+        $this->pLastError = $pLastError;
+    }
+
+    function getSaller() {
         return $this->pSaller;
+    }
+
+    public function getBookmarkId() {
+        return $this->pBookmarkId;
+    }
+
+    public function setBookmarkId($pBookmarkId) {
+        $this->pBookmarkId = $pBookmarkId;
     }
 
     public function setSaller($pSaller) {
@@ -31,7 +66,7 @@ class Order {
     }
 
         
-    function getState() {
+    public function getState() {
         return $this->pState;
     }
 
@@ -57,7 +92,7 @@ class Order {
 			 
     function setCreateDate($pValue)
     {
-	$this->CreateDate = $pValue;
+	$this->pCreateDate = $pValue;
     }
     
     function getEndDate ()
@@ -83,7 +118,7 @@ class Order {
     }
 
     function setBTCPrice($pBTCPrice) {
-        $this->pBTCPrice = $pBTCPrice;
+        $this->pBTCPrice = round($pBTCPrice, 8);
     }
 
     function setInvoiceAddress($pInvoiceAddress) {

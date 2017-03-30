@@ -124,6 +124,14 @@ class Bookmark {
     function setCustomPrice($pValue) {
         $this->pCustomPrice = $pValue;
     }
+    
+    function getPriceCurrency() {
+        return $this->pPriceCurrency;
+    }
+
+    function setPriceCurrency($pPriceCurrency) {
+        $this->pPriceCurrency = $pPriceCurrency;
+    }
 
     function getAdvertiseTitle() {
         return $this->pAdvertiseTitle;
