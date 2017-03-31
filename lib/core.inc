@@ -1,12 +1,12 @@
 <?php
 namespace BtcRelax;
-require_once 'logger.php';
+
 use BtcRelax\Model\Order;
 use BtcRelax\NotFoundException;
 use BtcRelax\SecureSession;
 use BtcRelax\SessionExpiredException;
 use const E_STRICT;
-
+require_once 'logger.php';
 
     final class Core {
 
@@ -60,10 +60,8 @@ use const E_STRICT;
         public $version;
         
 	public function __construct() {    
-            //require '/logger.php';
             $this->version = '0.0.0.2';
             $this->host_name = filter_input(INPUT_SERVER, "HTTP_HOST");
-        
         }
 
 	public function init() {
@@ -72,7 +70,7 @@ use const E_STRICT;
 		mb_internal_encoding('UTF-8');
 		set_exception_handler([$this, 'handleException']);
 		spl_autoload_register([$this, 'loadClass']);
-                
+                Log::general(sprintf("Try to start initialize core at host:%s", $this->host_name),LOG::INFO);
                 try
                 {
                     $config = Config::getConfig($this->host_name);
