@@ -8,6 +8,7 @@ use BtcRelax\DAO;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
 use Exception;
+require_once 'logger.php';
 
 final class SecureSession {
 
@@ -58,7 +59,7 @@ final class SecureSession {
 
     public function setNonce($nonce) {
         $this->setValue('nonce', $nonce);
-        SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce));
+        SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce),Log::INFO);
         
     }
 
@@ -205,12 +206,11 @@ final class SecureSession {
         return $result;
     }
     
-    public static function logMessage($msg)
+    public static function logMessage($msg,$logLevel)
 	{
             try
             {
-                $date = date('d/m/Y h:i:s a', time());
-		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/global.log");
+                Log::general($msg,$logLevel);
             }
             catch (Exception $ex)
             {

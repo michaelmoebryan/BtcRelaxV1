@@ -1,29 +1,47 @@
 <?php
 namespace BtcRelax;
-//For break use "\n" instead '\n' 
+
+use BtcRelax\Config;
 
 Class Log { 
   // 
-  const USER_ERROR_DIR = '/logic-errors.log'; 
-  const GENERAL_ERROR_DIR = '/general_errors.log'; 
+    const USER_ERROR_DIR = './logic-errors.log'; 
+    const GENERAL_ERROR_DIR = './general_errors.log'; 
 
-  /* 
-   User Errors... 
-  */ 
-    static public function user($msg,$username) 
+    const ERROR = 0;
+    const WARN = 1;
+    const INFO = 2;
+    
+    static public function user($msg,$username,$logLevel=0) 
     { 
-    $date = date('d.m.Y h:i:s'); 
-    $log = $msg."   |  Date:  ".$date."  |  User:  ".$username."\n"; 
-    error_log($log, 3, self::USER_ERROR_DIR); 
-    } 
-    /* 
-   General Errors... 
-  */ 
-    static public function general($msg) 
-    { 
-    $date = date('d.m.Y h:i:s'); 
-    $log = $msg."   |  Date:  ".$date."\n"; 
-    error_log($log, 3, self::GENERAL_ERROR_DIR); 
+    $max = self::getMaxLogLevel();
+    if ($logLevel >= $max)
+    {
+        $date = date('d.m.Y h:i:s'); 
+        $log = $msg."   |  Date:  ".$date."  |  User:  ".$username."\n"; 
+        error_log($log, 3, self::USER_ERROR_DIR);        
+    }
     } 
 
+    static public function general($msg,$logLevel=0) 
+    { 
+        $max = self::getMaxLogLevel();
+        if ($logLevel >= $max)
+        {
+            $date = date('d.m.Y h:i:s'); 
+            $log = $msg."   |  Date:  ".$date."\n"; 
+            error_log($log, 3, self::GENERAL_ERROR_DIR); 
+        }
+    } 
+
+    static public function getMaxLogLevel() 
+    {
+        $result = 0;
+        $config = Config::getConfig('global');
+        if (is_numeric($config['LOG_LEVEL']))
+        {
+            $result = filter_var($config['LOG_LEVEL'], FILTER_VALIDATE_INT);
+        }
+        return $result;
+    }
 } 

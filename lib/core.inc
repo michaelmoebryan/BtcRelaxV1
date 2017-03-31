@@ -61,7 +61,8 @@ require_once 'logger.php';
         
 	public function __construct() {    
             $this->version = '0.0.0.2';
-            $this->host_name = filter_input(INPUT_SERVER, "HTTP_HOST");
+            $this->host_name = gethostname(); 
+                    
         }
 
 	public function init() {
