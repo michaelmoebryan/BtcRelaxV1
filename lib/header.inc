@@ -21,8 +21,8 @@
 			{
 				$this->SiteMap = array
 				  (
-				  array("user",Self::I_PREFIX. "user.png"),
-				  array("kill",Self::I_PREFIX. "shutdown.png")
+				  array("user",Self::I_PREFIX. "/icons/32/wait.gif"),
+				  array("info",Self::I_PREFIX. "/icons/32/info.gif")
 				  );
 			}
 		} 

@@ -1,17 +1,16 @@
 <?php
 namespace BtcRelax;
 
-use BtcRelax\Flash;
+use BtcRelax\Model\Order;
 use BtcRelax\NotFoundException;
-use BtcRelax\SessionExpiredException;
 use BtcRelax\SecureSession;
+use BtcRelax\SessionExpiredException;
+use const E_STRICT;
 
 
-	
-	
     final class Core {
 
-	const DEFAULT_PAGE = 'shop';
+	const DEFAULT_PAGE = 'main';
 	const PAGE_DIR = '/lib/page/';
 	const LAYOUT_DIR = '/lib/layout/';
 
@@ -24,41 +23,119 @@ use BtcRelax\SecureSession;
 		'BtcRelax\BaseDao' => '/dao/BaseDao.php',
 		'BtcRelax\BookmarkDao' => '/dao/BookmarkDao.php',
 		'BtcRelax\Dao\BookmarkSearchCriteria' => '/dao/BookmarkSearchCriteria.php',
-		'BtcRelax\CustomerDao' => '/dao/CustomerDao.php',
+		'BtcRelax\OrderDao' => '/dao/OrderDao.php',
+                'BtcRelax\Dao\OrderSearchCriteria' => '/dao/OrderSearchCriteria.php',
+                'BtcRelax\CustomerDao' => '/dao/CustomerDao.php',
 		'BtcRelax\Mapping\BookmarkMapper' => '/mapping/BookmarkMapper.php',
 		'BtcRelax\Mapping\CustomerMapper' => '/mapping/CustomerMapper.php',
+                'BtcRelax\Mapping\OrderMapper' => '/mapping/OrderMapper.php',
 		'BtcRelax\Model\Bookmark' => '/model/bookmark.php',
 		'BtcRelax\Model\Customer' => '/model/customer.php',
+                'BtcRelax\Model\Order' => '/model/order.php',
 		'BtcRelax\Validation\BookmarkValidator' => '/validation/BookmarkValidator.php',
 		'BtcRelax\Validation\CustomerValidator' => '/validation/CustomerValidator.php',
+                'BtcRelax\Validation\OrderValidator' => '/validation/OrderValidator.php',
 		'BtcRelax\Validation\ValidationError' => '/validation/ValidationError.php',
 		'BtcRelax\Utils' => '/utils/utils.php',
 		'BtcRelax\BitID' => '/BitID.php',
 		'BtcRelax\LayoutHeader' => '/header.inc',
 		'BtcRelax\Dhtmlx' => '/dhtmlx.inc',
 		'BtcRelax\SecureSession' => '/SecureSession.php',
-	];
+                'BtcRelax\AM' => '/AM.php',
+                'BtcRelax\OM' => '/OM.php',
+                'BtcRelax\RE' => '/RE.php',
+                'BtcRelax\User' => '/usr.php',
+                'BtcRelax\RestResponse' => '/RestResponse.php',
+                'BtcRelax\RestConnection' => '/RestConnection.php',
+                'Geary' => '/external/Geary.php',
+                'QRcode' => '/classes/QRcode.php'
+           ];
     
-        private $current_session ;
+        protected $current_session;
+        protected $root_user_id;
+        protected $isAllowFreeRegistration;
+        //protected $host_name;
+        //protected $config;
+        public $am_instance;
+        public $om_instance;
+        public $re_instance;
         public $state;
+        public $version;
+        
         
 	public function __construct() {    
-
+            $this->version = '1.1.1.5';
+            //$this->host_name = gethostname();
+            require_once __DIR__.'/config/config.php';
+            //$this->config = Config::getConfig($this->host_name);
+            //$logLevel = $this->config['LOG_LEVEL'];
+            //define('LOG_LEVEL', $logLevel);
+            //require_once __DIR__.'/logger.php';
         }
-	/**
-	 * System config.
-	 */
+
 	public function init() {
 		// error reporting - all errors for development (ensure you have display_errors = On in your php.ini file)
 		error_reporting(E_ALL | E_STRICT);
 		mb_internal_encoding('UTF-8');
-		set_exception_handler([$this, 'handleException']);
-		spl_autoload_register([$this, 'loadClass']);	               
-                $cur_session = new \BtcRelax\SecureSession();
-                $cur_session->init();
-                $this->current_session = $cur_session;
+                $config = Config::getConfig();
+                $logLevel = $config['LOG_LEVEL'];
+                define('LOG_LEVEL', $logLevel);              
+                set_exception_handler([$this, 'handleException']);
+		spl_autoload_register([$this, 'loadClass']);
+                try
+                {
+
+                    $this->root_user_id = $config['HUB_ROOT']; 
+                    $this->isAllowFreeRegistration = $config['IS_FREE_REGISTER'];
+
+                    $this->re_instance = new RE();
+                    $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
+                    $this->om_instance = new OM();
+
+                    $cur_session = new SecureSession();
+                    $cur_session->init();
+                    $this->current_session = $cur_session;
+                }
+                catch (Exception $exc)
+                {
+                    Log::general(sprintf("Core initialization error: %s", $exc->getMessage()));
+                    throw $exc;
+                }
         }
-	
+        
+            public function getActualStatus() {
+                $result = SecureSession::STATUS_UNAUTH;
+                if ($this->current_session->hasCustomer()) {
+                    $customerId = $this->getCustomer()->getIdCustomer();
+                    if ($customerId === $this->root_user_id) {
+                        $result = SecureSession::STATUS_ROOT;
+                    } else {
+                        $result = SecureSession::STATUS_USER;
+                    }
+                } else {
+                    if ($this->current_session->hasBitid()) {
+                        $result = SecureSession::STATUS_GUEST;
+                    }
+                }
+                return $result;
+            }
+
+        
+	public function getAM()
+        {
+            return $this->am_instance;
+        }
+        
+        public function getOM()
+        {
+            return $this->om_instance;
+        }
+        
+        public function getRE()
+        {
+            return $this->re_instance;
+        }
+        
 	public function setBitId($vBitId)
 	{
             //if ($this->current_session->hasCustomer() === false && $vBitId !== null) {
@@ -69,27 +146,74 @@ use BtcRelax\SecureSession;
                 $custDao = new CustomerDao();
                 $newCustomer = $custDao->findById($idCustomer);
                 $this->current_session->setCustomer($newCustomer);
-                Flash::addFlash("Добро пожаловать. Вы успешно вошли в систему!");
+                //Flash::addFlash("Добро пожаловать. Вы успешно вошли в систему!");
                 return true;
             } else {
-                $this->current_session->setBitid($vBitId);
-                return true;
-            };
-        } else {
-            return false;
+                    $this->current_session->setBitid($vBitId);
+                    return true;
+                    }
+        } else 
+            {
+                return false;
             }
         }
 	
 	public function getBitId()
 	{
-		$this->current_session->getBitid();
+            return $this->current_session->getBitid();
 	}    
 
+        public function getSelectedBookmark()
+        {
+            $result = null;
+            $selectedBookmarkId = $this->current_session->getValue('selectedBookmarkId');
+            if ($selectedBookmarkId != null)
+            {
+                $bookmarkDao = new BookmarkDao();
+                $result  = $bookmarkDao->findById($selectedBookmarkId);
+            
+            }
+            return $result;
+        }
+        
+        public function setCurrentOrder(Order $order = null)
+        {
+            $this->current_session->setValue('currentOrder',$order);
+            // Clear selected bookmark if we already have order
+            $this->current_session->clearValue('selectedBookmarkId');             
+        }
+        
+        public function getCurrentOrder()
+        {
+            $result = $this->current_session->getValue('currentOrder');
+            return $result;
+        }
+               
 	public function getCustomer()
 	{
-            $this->current_session->getCustomer();
+            return $this->current_session->getCustomer();
 	}
- 
+        
+        public function getUser()
+	{
+            $result = null;
+            try
+            {
+                $cust = $this->current_session->getCustomer();
+                if (isset($cust))
+                {
+                    $cUser = new User();
+                    $cUser->init($cust->getIdCustomer());
+                    $result = $cUser;                
+                }   
+            }
+            catch (Exception $ex)
+            {
+                Log::general('Error while getting user:' . $ex->getMessage());
+            }
+            return $result;
+        }
+
         public function killSession()
         {
             $this->current_session->killSession();
@@ -97,7 +221,7 @@ use BtcRelax\SecureSession;
         
 	public function isAuthenticated()
 	{
-		$result = ($this->current_session->getActualStatus() !==  SecureSession::STATUS_UNAUTH);   
+		$result = ($this->getActualStatus() !==  SecureSession::STATUS_UNAUTH);   
 		return $result;	
 	}
 	
@@ -110,7 +234,7 @@ use BtcRelax\SecureSession;
 	
         public function getSessionState()
         {
-            $resultState = $this->current_session->getActualStatus();
+            $resultState = $this->getActualStatus();
             return $resultState;
         }
         
@@ -122,7 +246,7 @@ use BtcRelax\SecureSession;
         
 	public function getDefaultPage()
 	{
-	    $actualState = $this->current_session->getActualStatus();
+	    $actualState = $this->getActualStatus();
             switch ($actualState) {
             case SecureSession::STATUS_USER:
               $result_page = 'user';            
@@ -142,22 +266,29 @@ use BtcRelax\SecureSession;
 	 
 	public function run() {
 	$nonce = Utils::tryGetParam('nonce');
-        //$nonce = $this->current_session->getValue('nonce');		
+        $getBookmarkVar = Utils::tryGetParam('getBookmark');		
+        $extraParams = array();
         if (($nonce !== false) && (!empty($nonce)))
-		{
-                    $dao = new DAO();                   
-                    $addr = $dao->address($nonce, @$_SERVER['REMOTE_ADDR']);
-                    if (isset($addr))
                     {
-			$this->setBitid($addr);
+                        $dao = new DAO();                   
+                        $addr = $dao->address($nonce, @$_SERVER['REMOTE_ADDR']);
+                        if (isset($addr))
+                        {
+                            $this->setBitid($addr);
+                        }
                     }
-		}
-		$this->runPage($this->getPage());
+        if (isset($getBookmarkVar) && (is_numeric($getBookmarkVar)))
+        {                    
+                $this->current_session->setValue('selectedBookmarkId',$getBookmarkVar);
+        }
+        if (isset($_REQUEST))
+        {
+            $extraParams = $_REQUEST;
+        }
+	$this->runPage($this->getPage(),$extraParams);
 	}
 
-	/**
-	 * Exception handler.
-	 */
+
 	public function handleException($ex) {
 		$extra = ['message' => $ex->getMessage()];
 		switch ($ex) {
@@ -176,10 +307,8 @@ use BtcRelax\SecureSession;
  
 	}
 
-	/**
-	 * Class loader.
-	 */
 	public function loadClass($name) {
+            Log::general(sprintf("Loading class name:%s", $name),LOG::INFO); 
 		if (!$this->TryToAutoload($name))
 			{
 				if (!class_exists($name))
@@ -225,10 +354,10 @@ use BtcRelax\SecureSession;
 			$run = true;
 			// data for main template
 			$template = $this->getTemplate($page);
-			$flashes = null;
-			if (Flash::hasFlashes()) {
-				$flashes = Flash::getFlashes();
-			}
+//			$flashes = null;
+//			if (Flash::hasFlashes()) {
+//				$flashes = Flash::getFlashes();
+//			}
 
 			// main template (layout)
 			require $_SERVER['DOCUMENT_ROOT'] . self::LAYOUT_DIR . 'index.phtml';
@@ -240,9 +369,17 @@ use BtcRelax\SecureSession;
 
 	private function logError($error)
 	{
-		$date = date('d/m/Y h:i:s a', time());
-		error_log($date . ":" . $error.PHP_EOL, 3, __DIR__ . "/logic-errors.log");
-	}
+            try
+            {
+                Log::general($error);
+                //$this->current_session->logMessage($error);
+            }
+            catch (Exception $exc)
+            {
+                $date = date('d/m/Y h:i:s a', time());
+                error_log($date . "Core unable to use logger, because:" . $exc->getMessage() . ". While catched error:" . $error.PHP_EOL, 3, __DIR__ . "/core-errors.log");
+            }
+        }
 	
 	private function getScript($page) {
 		return $_SERVER['DOCUMENT_ROOT'] . self::PAGE_DIR . $page . '.php';
@@ -252,8 +389,6 @@ use BtcRelax\SecureSession;
 		return $_SERVER['DOCUMENT_ROOT'] . self::PAGE_DIR . $page . '.phtml';
 	}
 
-        
-        
 	private function hasScript($page) {
 		return file_exists($this->getScript($page));
 	}
@@ -289,4 +424,49 @@ use BtcRelax\SecureSession;
 
 }
 
+
+Class Log { 
+  // 
+    const USER_ERROR_DIR = './logic-errors.log'; 
+    const GENERAL_ERROR_DIR = './general_errors.log'; 
+
+    const FATAL = -1;
+    const ERROR = 0;
+    const WARN = 1;
+    const INFO = 2;
+    const DEBUG = 3;
+    
+    
+    
+    static public function user($msg,$username,$logLevel=0) 
+    { 
+        $max = self::getMaxLogLevel();
+        if ($logLevel <= $max)
+        {
+            $date = date('d.m.Y h:i:s'); 
+            $log = $msg."   |  Date:  ".$date."  |  User:  ".$username."\n"; 
+            error_log($log, 3, self::USER_ERROR_DIR);        
+        }
+    } 
+
+    static public function general($msg,$logLevel=0) 
+    { 
+        $max = self::getMaxLogLevel();
+        if ($logLevel <= $max)
+        {
+            $date = date('d.m.Y h:i:s'); 
+            $log = $msg."   |  Date:  ".$date."\n"; 
+            error_log($log, 3, self::GENERAL_ERROR_DIR); 
+        }
+    } 
+
+    static public function getMaxLogLevel() 
+    {
+        $result = 0;
+        if(!defined('LOG_LEVEL')) {
+                $result = MAX_LOG_LEVEL;
+           }
+        return $result;
+    }
+} 
 

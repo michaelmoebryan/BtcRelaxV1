@@ -66,7 +66,13 @@ class BitID {
 	 * @return string
 	 */
 	public function qrCode($uri) {
-		return $this->_qrservice . urlencode($uri);
+		$nonceFile = $this->extractNonce($uri).'.png';
+		$tempFile = sys_get_temp_dir().'/'.$nonceFile;
+			        if (!file_exists($tempFile))
+			        {
+			           \QRcode::png($uri, $tempFile,QR_ECLEVEL_L, 6);
+			        }
+		return "img.php?name=" . $nonceFile;
 	}
 
 	/**

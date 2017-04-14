@@ -1,6 +1,5 @@
 <?php
-
-namespace BtcRelax;
+        namespace BtcRelax;
 
         use \BtcRelax\SecureSession; 
     
@@ -29,7 +28,8 @@ namespace BtcRelax;
                                 r.onreadystatechange = function () {
                                     if (r.readyState != 4 || r.status != 200)
                                         return;
-                                    if (r.responseText === 'true') {
+					var data = JSON.parse(r.responseText);
+                                    	if (data.Result) {
                                             $(document.getElementById('copobanId')).hide("slow");
                                             clearInterval(myInterval);                                                                       
                                             $('#frmLogin').submit();             

@@ -7,7 +7,8 @@ use BtcRelax\Config;
 use BtcRelax\DAO;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
-
+use Exception;
+require_once 'logger.php';
 
 final class SecureSession {
 
@@ -26,7 +27,6 @@ final class SecureSession {
     private $nonce = null;
 
     public function __constructor() {
-        
     }
     
     public function init()
@@ -41,7 +41,7 @@ final class SecureSession {
                 $this->startSession();
             }
         }
-        \BtcRelax\SecureSession::logMessage(\sprintf("Loaded session id:%s", session_id()));             
+     
     }
     
 
@@ -56,17 +56,17 @@ final class SecureSession {
 
 
     public function setNonce($nonce) {
-        $this->setVal('nonce', $nonce);
-        \BtcRelax\SecureSession::logMessage(\sprintf("Session with id:%s got nonce:%s",session_id(),$nonce));
+        $this->setValue('nonce', $nonce);
+
         
     }
 
     public function setBitid($bitid) {
-        $this->setVal("bitid", $bitid);
+        $this->setValue("bitid", $bitid);
     }
 
     public function setCustomer($customer) {
-        $this->setVal("customer", $customer);
+        $this->setValue("customer", $customer);
     }
 
     public function getNonce() {
@@ -95,18 +95,19 @@ final class SecureSession {
         $server_url = $config['SERVER_URL'];
 
         $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
-        $this->setVal('bitid_uri', $bitid_uri);
+        $this->setValue('bitid_uri', $bitid_uri);
 
         $qr_uri = $bitid->qrCode($bitid_uri);
-        $this->setVal('qr_uri', $qr_uri);
+        $this->setValue('qr_uri', $qr_uri);
 
         $ajax_uri = $server_url . 'ajax.php';
-        $this->setVal('ajax_uri', $ajax_uri);
+        $this->setValue('ajax_uri', $ajax_uri);
 
         $user_uri = Utils::createLink('user');
-        $this->setVal('user_uri', $user_uri);
+        $this->setValue('user_uri', $user_uri);
 
         $dao = new DAO();
+        
         $dao->insert($nonce, $_SERVER['REMOTE_ADDR']);
         return array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri );
     }
@@ -142,13 +143,22 @@ final class SecureSession {
         return FALSE;
     }
 
-    public function setVal($session, $value) {
+    public function setValue($session, $value) {
+        if ($this->can_be_string($value) )
+        {
+            SecureSession::logMessage(\sprintf("Session id:%s saved value:%s for key:%s",session_id(),$value,$session ),Log::INFO);      
+        }
         if ($this->is_session_started()) {
             $_SESSION[$session] = $value;
             $_SESSION['last_active'] = time();
         }
     }
 
+    function can_be_string($v)
+    {
+        return method_exists($v, '__toString') || $v === null || is_scalar($v);
+    }
+    
     public function getValue($session) {
         if ($this->is_session_started()) {
             if (isset($_SESSION[$session])) {
@@ -164,6 +174,11 @@ final class SecureSession {
         } else {
             return null;
         }
+    }
+    
+    public function clearValue($session)
+    {
+        unset($_SESSION[$session]);
     }
 
     public function killSession() {
@@ -194,17 +209,22 @@ final class SecureSession {
         $pubKey = openssl_pkey_get_details($res);
         $pubKey = $pubKey["key"];
 
-        $result = array('PrivateKey' => $privKey, 'PublicKey' => $pubKey);
+        $result = ['PrivateKey' => $privKey, 'PublicKey' => $pubKey];
         return $result;
     }
     
-    public static function logMessage($msg)
+    public static function logMessage($msg,$logLevel)
 	{
-		$date = date('d/m/Y h:i:s a', time());
-		error_log($date . ":" . $msg.PHP_EOL, 3, __DIR__ . "/session.log");
-	}
-    
-    
+            try
+            {
+                Log::general($msg,$logLevel);
+            }
+            catch (Exception $ex)
+            {
+                throw new Exception('Critical permissions, denied!!!');
+            }
+        }
+ 
     public static function allStatuses() {
         return [
             self::STATUS_UNAUTH,
@@ -215,22 +235,5 @@ final class SecureSession {
         ];
     }
 
-    public function getActualStatus() {
-        $result = self::STATUS_UNAUTH;
-        if ($this->hasCustomer()) {
-            $customerId = $this->getCustomer()->getIdCustomer();
-            $config = Config::getConfig('customize');
-            if ($customerId === $config['HUB_ROOT']) {
-                $result = self::STATUS_ROOT;
-            } else {
-                $result = self::STATUS_USER;
-            }
-        } else {
-            if ($this->hasBitid()) {
-                $result = self::STATUS_GUEST;
-            }
-        }
-        return $result;
-    }
 
 }

@@ -1,1 +1,129 @@
-<h3>Hello</h3>
+<div class="w3-row" >
+<?php
+    global $core;
+    $curentOrder  = $core->getCurrentOrder();
+   
+    if ($curentOrder === null) {
+        echo '<div class="w3-display-topmiddle w3-panel w3-blue w3-round-medium"><h1>Закладки</h1></div>';
+        echo \BtcRelax\renderGetActiveBookmarks();
+    } else {
+        $validationError = BtcRelax\Validation\OrderValidator::validate($currentOrder);
+        if (count($validationError)>0)
+        { $errorDescr = reset($validationError); 
+        ?>
+            <script>
+                dhtmlx.alert({
+                title:"<?php echo $errorDescr->getSource();?>",
+                type:"alert-error",
+                text:"<?php echo $errorDescr->getMessage();?>",
+                callback:function()
+                    {
+                        App.refreshPage();    
+                        //$('#frmLogin').submit();
+                    }
+                }); 
+            </script>
+        <?php 
+            $core->setCurrentOrder();
+        }
+        else {    
+            $orderState = $curentOrder->getState(); 
+            switch ($orderState) { 
+            case 'Created':
+                ?>
+                <form id="frmConfirmOrder" action="#"  method="post">
+                    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front 
+                         ui-dialog-buttons ui-draggable" aria-describedby="dialog" aria-labelledby="ui-id-18" 
+                         style="position: absolute; height: auto; width: 400px; top: 1317.5px; left: 747px; display: block;">
+                        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix ui-draggable-handle"></div>    
+                            <div id="dialog" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 2px; max-height: none; height: auto;">
+                            <p>Согласно текущего курса, цена выбраной Вами закладки, в биткоинах будет составлять:</p>
+                            <div class="w3-center"><p><i class="fa fa-btc"></i><strong><?php echo( $curentOrder->getBTCPrice() ); ?></strong></p></div>
+                            <div class="alert alert-danger"><p><strong>Убедительная просьба, не подтверждать заказ если у Вас в наличии нет необходимого количества биткоинов!</strong></p></div>
+                            </div>
+                            <input id="orderConfirmator" type="hidden" name="isConfirmed" value="false">
+                        <div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;">
+                        </div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;">
+                        </div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div>
+                        <div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div>
+                    </div>
+                    <script>              
+                        $("#dialog").dialog({
+                            title: "Внимание!",
+                            resizable: false,
+                            modal: true,
+                            show: {
+                                effect: "blind",
+                                duration: 1000
+                                },
+                            hide: {
+                                effect: "explode",
+                                duration: 1000
+                            },
+                            beforeClose: function(event, ui) { 
+                                    confirmOrder(false);
+                                },
+                            autoOpen: false,
+                            buttons: [
+                                {
+                                    text: "Покупаю!",
+                                    click:  function() {
+                                        confirmOrder(true); 
+                                    }
+                                },
+                                {
+                                    text: "Отмена",
+                                    click: function() {
+                                         confirmOrder(false); 
+                                    }
+                                }
+                            ]
+                        });
+                    </script>
+                    </form>
+               <?php
+                break;
+            
+            case 'WaitForPayment':
+                ?>
+                    <form name="setOrder" id="getOrder" action="" method="post" >
+                        <span id="topControl" class="badge badge-success" style="margin:10px">
+                            <div class="form-group">
+                                <div class="pagination pagination-centered" >
+                                <h1><label id="labelOrderHeader" class="control-label span4" >Заказ №<b><?php echo($currentOrder->getIdOrder()); ?></b></label></h1>
+                                <label id="labelOrderState" class="control-label span4" style="margin-top:-5px" >Состояние: </b>
+                                <button id="btnOrderRefresh" type="button" class="btn btn-info">
+                                    <i class="fa fa-refresh fa-spin fa-fw"></i>Ожидание платежа</button>                           
+                                </label>
+				<h4><label id="labelOrderOwner" class="control-label span4" >Стоимость заказа: <strong><?php echo( $curentOrder->getBTCPrice() ); ?></strong><i class="fa fa-btc"></i></label></h4>
+                                <?php 
+                                $invoice =  sprintf('bitcoin:%s?amount=%s',$currentOrder->getInvoiceAddress(), $curentOrder->getBTCPrice());   
+                                $name = $currentOrder->getInvoiceAddress().'.png';
+                                $tempFile = sys_get_temp_dir().'/'.$name;
+                                if (!file_exists($tempFile))
+                                {
+                                    QRcode::png($invoice, $tempFile,QR_ECLEVEL_L, 8);
+                                }
+                                echo ('<a href="' . $invoice . '" ><img src="img.php?name='.$name.'" class="loginQr w3-image"  /></a>');
+                                echo ('<p><label class="control-label span4">Адресс для оплаты:</label></p>'); 
+                                echo ('<button class="button button2" id="idInvoiceAddress" onclick="copyToClipboard(\''.$currentOrder->getInvoiceAddress().'\')">'.$currentOrder->getInvoiceAddress().'</button>' );  ?>
+                                <h4><label class="control-label span4">Принято:  </label><strong>0</strong><i class="fa fa-btc"></i></h4>               
+                                </div>
+                            </div>
+                        </span>
+                    </form>
+                                
+                <?php
+                break;
+            default: ?>
+                <h3>Order has state: <?php echo $curentOrder->getState() ?> which dont have form!</h3>
+                <?php break;
+            }
+        }
+    }?>
+</div>
+

@@ -1,6 +1,6 @@
 <?php
-	namespace BtcRelax;
 
+namespace BtcRelax;
 use Exception;
 
 /**
@@ -18,7 +18,8 @@ final class Config {
 	 */
 	public static function getConfig($section = null) {
 		if ($section === null) {
-			return self::getData();
+                    $section = gethostname();
+                    //return self::getData();
 		}
 		$data = self::getData();
 		if (!array_key_exists($section, $data)) {

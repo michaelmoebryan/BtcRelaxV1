@@ -1,39 +1,32 @@
 <?php
 
-function generateAutoLoginLink($params){
-    
+function generateAutoLoginLink($params){    
      $dataRequest = array();
-     $dataRequestAppend = array();
-     
+     $dataRequestAppend = array();    
      // Destination ID
      if (isset($params['r'])){
          $dataRequest['r'] = $params['r'];
          $dataRequestAppend[] = '/(r)/'.rawurlencode(base64_encode($params['r']));
-     }
-     
+     }     
      // User ID
      if (isset($params['u']) && is_numeric($params['u'])){
          $dataRequest['u'] = $params['u'];
          $dataRequestAppend[] = '/(u)/'.rawurlencode($params['u']);
-     }
-     
+     }     
      // Username
      if (isset($params['l'])){
          $dataRequest['l'] = $params['l'];
          $dataRequestAppend[] = '/(l)/'.rawurlencode($params['l']);
-     }
-     
+     }     
      if (!isset($params['l']) && !isset($params['u'])) {
          throw new Exception('Username or User ID has to be provided');
-     }
-     
+     }     
      // Expire time for link
      if (isset($params['t'])){
          $dataRequest['t'] = $params['t'];
          $dataRequestAppend[] = '/(t)/'.rawurlencode($params['t']);
      }
-     $hashValidation = sha1($params['secret_hash'].sha1($params['secret_hash'].implode(',', $dataRequest)));
-     
+     $hashValidation = sha1($params['secret_hash'].sha1($params['secret_hash'].implode(',', $dataRequest)));    
      return "helper/index.php/user/autologin/{$hashValidation}".implode('', $dataRequestAppend);
 }
 

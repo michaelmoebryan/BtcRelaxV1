@@ -5,6 +5,7 @@ html {
 body {
   padding-top: 50px;
   background-color:transparent ;
+  overflow-y: auto ;
 }
 .bgimg {
   background-image: url("../img/back.jpg"); 
@@ -19,6 +20,12 @@ body {
 	{
 		white-space: normal;
 	}
+}
+
+.loginQr
+{
+    width: 250px;
+    height: 250px;
 }
 
 @media (min-width: 768px) {
@@ -63,29 +70,20 @@ body {
 .logo
 {
     display: none;
+    background-color: transparent;
 }
 
 .logo_unauth
 {
     border-style: none;
-    padding: 0;
-    box-sizing: inherit;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);  
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    -ms-transform:translate(-50%,-50%);  
     animation-name: animated_div;
     z-index: 9999;
 }
-
-.logo_unauth img
-{
-    width: 150%;
-    height: 150%;        
-}
-
-
 
 .logo_auth
 {
@@ -94,14 +92,27 @@ body {
     border: 0;
     -webkit-animation-fill-mode: forwards;
     break-after: avoid;
-    background-color: transparent;
     resize: both;
-    z-index: 9999;
     position: absolute;
     left: 50px;
     top: 50px;
     animation-name: animated_div;
+    z-index:9999;
 }
+
+.logo_unauth img
+{
+    width: 150%;
+    height: 150%;   
+}
+
+.logo_unauth img:hover
+{
+   
+}
+
+
+
 
 .logo_auth img
 {
@@ -109,6 +120,10 @@ body {
     height: 75%;
 }
 
+.logo_auth img:hover
+{
+    
+}
 
 #animated_div {
 	width: 76px;
@@ -131,3 +146,41 @@ body {
 {
     display: block;    
 }
+
+.front_shop_panel
+{
+   display: block; 
+   border-radius:10px;
+      border-color:navy;
+      border-width:medium;
+      border-style:solid;
+      background-color: mintcream;
+      -webkit-box-shadow:2px 2px 2px 2px #737373;
+      -moz-box-shadow:2px 2px 2px 2px #737373;
+      -o-box-shadow:2px 2px 2px 2px #737373;
+      -ms-box-shadow:2px 2px 2px 2px #737373;
+      box-shadow:4px 4px 4px 4px #737373;
+      text-align: center;
+      -webkit-transition: .4s ease-out;
+      -webkit-transition-delay: 0.5s;
+  -o-transition: .4s ease-out;
+  -o-transition-delay: 0.5s;
+  -moz-transition: .4s ease-out;
+  -moz-transition-delay: 0.5s;
+  transition: .4s ease-out;
+  transition-delay: 0.5s;
+  width: -moz-fit-content;
+  width:-webkit-fit-content;
+  width:-ms-fit-content; 
+  box-sizing: border-box;
+}
+
+.storefronItem
+{
+    border-radius: 20px;
+    border: 4px solid #8AC007;
+    padding: 5px;
+    margin: 10px;
+    background-color: silver;
+    display: inline-block;
+} 

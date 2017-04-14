@@ -12,9 +12,7 @@
     <link href="css/show_message.css" rel="stylesheet" type="text/css" >
     <link href="css/jquery-ui.min.css" rel="stylesheet">
     <link href="css/notify.css" rel="stylesheet" type="text/css">
-
-    <!-- Custom styles for this template -->
-    <link href="css/dhtmlx.css" rel="stylesheet">
+    <link href="css/dhtmlx.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="js/app/app.css">
     <link rel="stylesheet" type="text/css" href="css/w3.css">		
     <script type="text/javascript" src="js/jquery-1.11.3.min.js" ></script>		
@@ -39,7 +37,7 @@
     <body class="bgimg w3-container" onload="doOnLoad();" onunload="doOnUnload();" >
         <nav>
             <div class="navbar-header">                       
-                <button id="idMainButton" class="logo" >                            
+                <button onclick="btnPush();" id="idMainButton" class="logo" >                            
                     <img src="/img/ff2_128.gif" />
                 </button>
                 <?php
@@ -58,16 +56,13 @@
             }
             ?>			
         </nav>
-        <div id="copobanId"  class="w3-display-middle" style="display: none;">
+        <div id="copobanId" class=""  style="display: none;">
 <?php require $template; ?>
         </div>
-        <footer>
-           <script>
-			$( document ).ready( function() {
-                               updateSessionState('<?php  echo($core->getSessionState()); ?>'); 
-                            });
-	
-            </script>            
+        <footer class="wb_footer w3-container" id="footer" role="contentinfo">
+           <?php 
+           	include 'footer.php'; 
+            ?>	
         </footer>
     </body>
 </html>

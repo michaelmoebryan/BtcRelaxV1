@@ -11,7 +11,7 @@
 	
 	class BaseDao
 	{
-		private $db = null;
+		protected $db = null;
 
 
 		public function __destruct() {
@@ -25,14 +25,26 @@
 			}
 			$config = Config::getConfig('db');
 			try {
-				$this->db = new PDO($config['DSN'], $config['DB_USER'], $config['DB_PASS']);
-			} catch (Exception $ex) {
+				$this->db = new PDO($config['DSN'], $config['DB_USER'], $config['DB_PASS'], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+                        } catch (Exception $ex) {
 				throw new Exception('DB connection error: ' . $ex->getMessage());
 			}
 			return $this->db;
 		}
-				
-		public function query($sql) {
+		
+                public function addToFilter($filter,$newWhere)
+                {
+                    if (empty($filter))
+                    {
+                        return sprintf('WHERE %s', $newWhere);
+                    }
+                    else {
+                        return sprintf('%s AND %s', $filter, $newWhere);
+                    }
+                }
+
+
+                public function query($sql) {
 			$statement = $this->getDb()->query($sql, PDO::FETCH_ASSOC);
 			if ($statement === false) {
 				self::throwDbError($this->getDb()->errorInfo());
@@ -42,7 +54,6 @@
 	 
 		private static function throwDbError(array $errorInfo) {
 			$error_message = 'DB error [' . $errorInfo[0] . ', ' . $errorInfo[1] . ']: ' . $errorInfo[2];
-			error_log($error_message);
 			throw new Exception($error_message);
 		}
 		
@@ -54,5 +65,3 @@
 				return $bool ? 1 : 0;
 		}
 	} 
-?>
-
