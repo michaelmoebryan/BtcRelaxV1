@@ -1,11 +1,11 @@
-
 RewriteEngine on
 DirectoryIndex index.php
 Header set Access-Control-Allow-Origin "*"
+Options -Indexes 
 #RewriteCond %{HTTPS} off
 #RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 <IfModule mod_suphp.c> 
-  suPHP_ConfigPath /home/fastksjq/public_html 
+  suPHP_ConfigPath /opt/lampp/htdocs/
 </IfModule>
 #RewriteCond %{HTTP_HOST} ^fastfen\.club$ [OR]
 #RewriteCond %{HTTP_HOST} ^www\.fastfen\.club$

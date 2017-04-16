@@ -10,7 +10,7 @@
 			$custDao=new CustomerDao();
 			$this->customer=$custDao->findById($user_id);
 			if($this->customer===null){
-				throw new NotFoundException('Critical error! Customer with Id "'.$user_id.'" was not found.');
+				throw new \LogicException('Critical error! Customer with Id "'.$user_id.'" was not found.');
 			}
 		}
                 

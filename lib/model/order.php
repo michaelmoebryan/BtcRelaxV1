@@ -198,7 +198,7 @@ class Order {
     public function __toString() {
         $result = null;
         if (!empty($this->pIdOrder)) {$result .= \sprintf("OrderId:%s|", $this->pIdOrder ); }
-        //if (!empty($this->pCreateDate)) {$result .= sprintf("Created:%s|", $this->pCreateDate->format('Y-m-d H:i:s') );
+        if (!empty($this->pCreateDate)) {$result .= sprintf("Created:%s|", $this->pCreateDate->format('Y-m-d H:i:s') );}
         if (!empty($this->pState)) {$result .= sprintf("State:%s|", $this->pState); }
         if (!empty($this->pBTCPrice)) {$result .= sprintf("Price:%s|", $this->pBTCPrice); }
         if (!empty($this->pPricingDate)) {$result .= \sprintf("Priced:%s|", $this->pPricingDate->format('Y-m-d H:i:s') ); }

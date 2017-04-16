@@ -57,7 +57,13 @@ final class OrderDao extends \BtcRelax\BaseDao
                 }
             return $result;
         }
-		
+	
+            /// Need to call DB function 
+            public function updateHotBalance(Order $updOrder)
+            {
+                //`UpdateHotBalance`(<{pOrderId int}>, <{pBalance decimal(12,8)}>)
+            }
+                    
             public function find(OrderSearchCriteria $search = null) 
 		{
 			$result = [];

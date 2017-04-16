@@ -99,22 +99,7 @@ require_once __DIR__.'/logger.php';
                 }
         }
         
-            public function getActualStatus() {
-                $result = SecureSession::STATUS_UNAUTH;
-                if ($this->current_session->hasCustomer()) {
-                    $customerId = $this->getCustomer()->getIdCustomer();
-                    if ($customerId === $this->root_user_id) {
-                        $result = SecureSession::STATUS_ROOT;
-                    } else {
-                        $result = SecureSession::STATUS_USER;
-                    }
-                } else {
-                    if ($this->current_session->hasBitid()) {
-                        $result = SecureSession::STATUS_GUEST;
-                    }
-                }
-                return $result;
-            }
+
 
         
 	public function getAM()
@@ -205,7 +190,7 @@ require_once __DIR__.'/logger.php';
             }
             catch (Exception $ex)
             {
-                Log::general('Error while getting user:' . $ex->getMessage());
+                Log::general('Error while getting user:' . $ex->getMessage(),Log::ERROR);
             }
             return $result;
         }
@@ -217,7 +202,7 @@ require_once __DIR__.'/logger.php';
         
 	public function isAuthenticated()
 	{
-		$result = ($this->getActualStatus() !==  SecureSession::STATUS_UNAUTH);   
+		$result = ($this->getSessionState() !==  SecureSession::STATUS_UNAUTH);   
 		return $result;	
 	}
 	
@@ -230,8 +215,20 @@ require_once __DIR__.'/logger.php';
 	
         public function getSessionState()
         {
-            $resultState = $this->getActualStatus();
-            return $resultState;
+                $result = SecureSession::STATUS_UNAUTH;
+                if ($this->current_session->hasCustomer()) {
+                    $customerId = $this->getCustomer()->getIdCustomer();
+                    if ($customerId === $this->root_user_id) {
+                        $result = SecureSession::STATUS_ROOT;
+                    } else {
+                        $result = SecureSession::STATUS_USER;
+                    }
+                } else {
+                    if ($this->current_session->hasBitid()) {
+                        $result = SecureSession::STATUS_GUEST;
+                    }
+                }
+                return $result;
         }
         
         public function getNonce()
@@ -242,7 +239,7 @@ require_once __DIR__.'/logger.php';
         
 	public function getDefaultPage()
 	{
-	    $actualState = $this->getActualStatus();
+	    $actualState = $this->getSessionState();
             switch ($actualState) {
             case SecureSession::STATUS_USER:
               $result_page = 'user';            

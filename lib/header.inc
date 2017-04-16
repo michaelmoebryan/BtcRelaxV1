@@ -9,7 +9,7 @@
 		const HEADER_BEGIN = '<div class="collapse navbar-collapse">
 		  <ul class="nav navbar-nav">';
 		const HEADER_END = '</ul></div>';
-        const I_PREFIX = '/img/';
+                const I_PREFIX = '/img/';
 		
 		private $headerHTML = null;
 		private $SiteMap;

@@ -44,7 +44,42 @@ class OM implements IOM {
 //        $price = $order->getBTCPrice();
 //        $keychain_id = 0;
 
-
+    /// Return null if no changes happen, and object as a result of changes
+    public function checkPaymentByOrder(Model\Order $order)
+    {
+        $result = null;
+        $isNeedToUpdate = false;
+        $priceStart = $order->getBalanceDate();
+        if (isset($priceStart))
+        {
+            $priceStart->modify("+30 second");
+            $now = new DateTime('Now');
+            if ($now >= $priceStart)
+            {
+                $isNeedToUpdate = true;
+            }
+        }
+        else
+        {
+            $isNeedToUpdate;
+        }
+        if ($isNeedToUpdate)
+        {
+            $oldBalance = $order->getInvoiceBalance();
+            $newBalance = $order->CheckPaymentAddress();
+            if ($oldBalance != $newBalance)
+            {
+                $order->setInvoiceBalance($newBalance);
+                $dao = new OrderDao();
+                $updatedOrder = $dao->updateHotBalance($order);
+                if (isset($updatedOrder))
+                {
+                    $result = $updatedOrder;
+                }
+            }
+        }
+        return $result;
+    }
     
     public function getOrderById($orderId) {        
     }

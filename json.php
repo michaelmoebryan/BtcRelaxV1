@@ -2,34 +2,56 @@
   namespace BtcRelax;
   header("Access-Control-Allow-Origin: *");
   ini_set("display_errors", 0);
-  
-  require('lib/core.inc');	
-  $core = new \BtcRelax\Core();
   $message = [];
-  $core->init();    
-
-  switch($_REQUEST["action"])
+    
+  if (!empty($_REQUEST["action"]))
   {
-        case 'kill':
+    require('lib/core.inc');	
+    $core = new \BtcRelax\Core();
+    $core->init();    
+    switch($_REQUEST["action"])
+        {
+            case 'checkOrder':
+                try {
+                    $currentOrder = $core->getCurrentOrder();
+                    if (isset($currentOrder))
+                    {
+                        $om = $core->getOM();
+                        $om->checkPaymentByOrder($currentOrder);
+                        $message["code"] = "0";
+                        $message["message"] = "Checked";
+                    }
+                } catch (Exception $ex) {
+                    $message["code"] = "-3";
+                    $message["message"] = "Unable to check order";                    
+                }
+            case 'kill':
                 try
-                {
-                    $core->killSession();
-                    $message["code"] = "0";
-                    $message["message"] = "Session was killed";}
+                    {
+                          $core->killSession();
+                          $message["code"] = "0";
+                          $message["message"] = "Session was killed";
+                    }
                 catch (Exception $ex)
-                {
-                    $message["code"] = "-2";
-                    $message["message"] = "Unable to kill session";                    
-                };
+                    {
+                          $message["code"] = "-2";
+                          $message["message"] = "Unable to kill session";                    
+                    }
                 break;
-        case 'ping':
-            $message["code"] = "0";
-            $message["message"] = $core->getSessionState();
-            break;
-	default:
-            $message["code"] = "-1";
-            $message["message"] = "Unknown method " . $_POST["action"];
-            break;
+            case 'ping':
+                  $message["code"] = "0";
+                  $message["message"] = $core->getSessionState();
+                  break;
+            default:
+                  $message["code"] = "-1";
+                  $message["message"] = "Unknown method " . $_POST["action"];
+                  break;
+        }    
+  }
+  else
+  {
+      Log::general('Incorrect request to Json.',Log::WARN);
+      die;
   }
 
   //the JSON message

@@ -15,7 +15,7 @@ Class Log {
     const INFO = 2;
     const DEBUG = 3;
 
-    static public $maxLogLevel;
+
 
     static public function user($msg, $username, $logLevel = 0) {
         $max = self::getMaxLogLevel();
@@ -36,13 +36,14 @@ Class Log {
     }
 
     static public function getMaxLogLevel() {
-        if (!isset(self::$maxLogLevel)) {
+        if (!defined('maxLogLevel')) {
             $config = Config::getConfig();
             if (is_numeric($config['LOG_LEVEL'])) {
-                self::$maxLogLevel = filter_var($config['LOG_LEVEL'], FILTER_VALIDATE_INT);
+                $maxLogLevel = filter_var($config['LOG_LEVEL'], FILTER_VALIDATE_INT);
+                define('maxLogLevel', $maxLogLevel);                
             }
         }
-        return self::$maxLogLevel;
+        return maxLogLevel;
     }
 
 }

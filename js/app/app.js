@@ -21,28 +21,16 @@ var App = (function () {
         },
         createUsr: function()
         {
-//           var request = $.ajax({
-//                        url: "/",
-//                        method: "POST",
-//                        async: false,
-//                        data: { action:"createUser" },
-//                        });
             $('#frmPage').submit(); 
-//                request.done(function( msg ) {
-//                        App.showRegisterOk();
-//                    });
-// 
-//                request.fail(function( jqXHR, textStatus ) {
-//                        App.showRegisterFail();
-//                    });
-            
-//            $.ajax( "json.php?action=createUser", function() {
-//              }).done(function() {
-//                  App.showRegisterOk();
-//                })
-//                .fail(function() {
-//                  App.showRegisterFail();
-//                });
+        },
+        checkOrder: function ()
+        {
+                  var request = $.getJSON("json.php", {action: "checkOrder"})
+                    .done(function( json )
+                        {
+                            console.log( "JSON Data: " + json.users[ 3 ].name );                           
+                        }
+                    );
         },
         logoBtnClick: function ()
         {
@@ -57,7 +45,7 @@ var App = (function () {
                             this.showLoginWindow();
                             break;
                         default:
-                            $.post( "json.php", { action: "kill" }, function(){                            
+                            $.get( "json.php", { action: "kill" }, function(){                            
                                 $('#idMainButton').switchClass("logo_auth", "logo_unauth");
                                 $(document.getElementById('copobanId')).hide('slow');
                                 location.reload(true);
@@ -78,20 +66,17 @@ var App = (function () {
         },
         showRegisterOk: function()
         {
-            dhtmlx.alert("Ваш акаунт успешно создан!", function(result){
-                
+            dhtmlx.alert("Р’Р°С€ Р°РєР°СѓРЅС‚ СѓСЃРїРµС€РЅРѕ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ!", function(result){               
                 App.refreshPage();
-                //location.reload(true);    
-                //$('#frmLogin').submit();
 		});          
             
         },
         showRegisterFail: function()
         {
             dhtmlx.alert({
-                title:"Ошибка!",
+                title:"РћС€РёР±РєР°!",
                 type:"alert-error",
-                text:"В ходе регистрации, произошёл сбой, попробуйте позже.",
+                text:"Р’ РјРѕРјРµРЅС‚ СЂРµРіРёСЃС‚СЂР°С†РёРё РїСЂРѕРёР·РѕС€С‘Р» СЃР±РѕР№. РџРѕРїСЂРѕР±СѓР№С‚Рµ РїРѕР·Р¶Рµ.",
                 callback:function()
                     {
                         App.refreshPage();    
@@ -142,7 +127,7 @@ var App = (function () {
                     {
                        url: "json.php",
                        async: false,
-                       method: "POST",
+                       method: "get",
                        data: { action:"kill" },
                        success:function() {
                           App.refreshPage();                  
