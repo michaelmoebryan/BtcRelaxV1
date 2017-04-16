@@ -8,7 +8,7 @@ use BtcRelax\DAO;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
 use Exception;
-require_once 'logger.php';
+
 
 final class SecureSession {
 
@@ -91,7 +91,7 @@ final class SecureSession {
         $bitid = new BitID();
         $nonce = $bitid->generateNonce();
         $this->setNonce($nonce);
-        $config = Config::getConfig('BitId');
+        $config = Config::getConfig();
         $server_url = $config['SERVER_URL'];
 
         $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
@@ -144,9 +144,12 @@ final class SecureSession {
     }
 
     public function setValue($session, $value) {
-        if ($this->can_be_string($value) )
+        if (is_string($value))
         {
-            SecureSession::logMessage(\sprintf("Session id:%s saved value:%s for key:%s",session_id(),$value,$session ),Log::INFO);      
+            SecureSession::logMessage(\sprintf("Session id:%s saved value:%s for key:%s",session_id(),$value,$session ),Log::DEBUG);      
+        }
+        else {
+            SecureSession::logMessage(\sprintf("Session id:%s saved value of type:%s for key:%s",session_id(),gettype($value),$session ),Log::DEBUG);    
         }
         if ($this->is_session_started()) {
             $_SESSION[$session] = $value;
@@ -154,10 +157,6 @@ final class SecureSession {
         }
     }
 
-    function can_be_string($v)
-    {
-        return method_exists($v, '__toString') || $v === null || is_scalar($v);
-    }
     
     public function getValue($session) {
         if ($this->is_session_started()) {

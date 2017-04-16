@@ -1,7 +1,6 @@
 <?php
 namespace BtcRelax;
 
-use BtcRelax\Config;
 use BtcRelax\User;
 use Exception;
 use PDO;

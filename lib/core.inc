@@ -6,7 +6,7 @@ use BtcRelax\NotFoundException;
 use BtcRelax\SecureSession;
 use BtcRelax\SessionExpiredException;
 use const E_STRICT;
-
+require_once __DIR__.'/logger.php';
 
     final class Core {
 
@@ -54,8 +54,8 @@ use const E_STRICT;
         protected $current_session;
         protected $root_user_id;
         protected $isAllowFreeRegistration;
-        //protected $host_name;
-        //protected $config;
+        protected $host_name;
+        protected $config;
         public $am_instance;
         public $om_instance;
         public $re_instance;
@@ -65,28 +65,24 @@ use const E_STRICT;
         
 	public function __construct() {    
             $this->version = '1.1.1.5';
-            //$this->host_name = gethostname();
-            require_once __DIR__.'/config/config.php';
-            //$this->config = Config::getConfig($this->host_name);
-            //$logLevel = $this->config['LOG_LEVEL'];
-            //define('LOG_LEVEL', $logLevel);
-            //require_once __DIR__.'/logger.php';
+            global $cookie_lifetime;
+            if(isset($cookie_lifetime) && $cookie_lifetime != "") {
+                ini_set("session.cookie_lifetime", $cookie_lifetime);
+            }
         }
 
 	public function init() {
 		// error reporting - all errors for development (ensure you have display_errors = On in your php.ini file)
-		error_reporting(E_ALL | E_STRICT);
-		mb_internal_encoding('UTF-8');
-                $config = Config::getConfig();
-                $logLevel = $config['LOG_LEVEL'];
-                define('LOG_LEVEL', $logLevel);              
+		Log::general(sprintf('Start to initialize core version:%s',$this->version ), Log::DEBUG);
+                error_reporting(E_ALL | E_STRICT);
+		mb_internal_encoding('UTF-8');       
                 set_exception_handler([$this, 'handleException']);
 		spl_autoload_register([$this, 'loadClass']);
                 try
                 {
-
-                    $this->root_user_id = $config['HUB_ROOT']; 
-                    $this->isAllowFreeRegistration = $config['IS_FREE_REGISTER'];
+                    $this->config = Config::getConfig();     
+                    $this->root_user_id = $this->config['HUB_ROOT']; 
+                    $this->isAllowFreeRegistration = $this->config['IS_FREE_REGISTER'];
 
                     $this->re_instance = new RE();
                     $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
@@ -308,7 +304,7 @@ use const E_STRICT;
 	}
 
 	public function loadClass($name) {
-            Log::general(sprintf("Loading class name:%s", $name),LOG::INFO); 
+            Log::general(sprintf("Loading class name:%s", $name),Log::DEBUG); 
 		if (!$this->TryToAutoload($name))
 			{
 				if (!class_exists($name))
@@ -423,50 +419,3 @@ use const E_STRICT;
 	}
 
 }
-
-
-Class Log { 
-  // 
-    const USER_ERROR_DIR = './logic-errors.log'; 
-    const GENERAL_ERROR_DIR = './general_errors.log'; 
-
-    const FATAL = -1;
-    const ERROR = 0;
-    const WARN = 1;
-    const INFO = 2;
-    const DEBUG = 3;
-    
-    
-    
-    static public function user($msg,$username,$logLevel=0) 
-    { 
-        $max = self::getMaxLogLevel();
-        if ($logLevel <= $max)
-        {
-            $date = date('d.m.Y h:i:s'); 
-            $log = $msg."   |  Date:  ".$date."  |  User:  ".$username."\n"; 
-            error_log($log, 3, self::USER_ERROR_DIR);        
-        }
-    } 
-
-    static public function general($msg,$logLevel=0) 
-    { 
-        $max = self::getMaxLogLevel();
-        if ($logLevel <= $max)
-        {
-            $date = date('d.m.Y h:i:s'); 
-            $log = $msg."   |  Date:  ".$date."\n"; 
-            error_log($log, 3, self::GENERAL_ERROR_DIR); 
-        }
-    } 
-
-    static public function getMaxLogLevel() 
-    {
-        $result = 0;
-        if(!defined('LOG_LEVEL')) {
-                $result = MAX_LOG_LEVEL;
-           }
-        return $result;
-    }
-} 
-

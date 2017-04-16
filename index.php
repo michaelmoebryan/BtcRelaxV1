@@ -1,5 +1,5 @@
-<?php
-	require('lib/core.inc');
+<?php      
+        require('lib/core.inc');
 	
 	$core = new \BtcRelax\Core();
 	$core->init();	

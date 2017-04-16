@@ -1,13 +1,13 @@
 <?php
 
 namespace BtcRelax;
-	use BtcRelax\Config;
+use BtcRelax\Config;
 // QUICK AND DIRTY DAO CLASS
 class DAO {
 
 	private $_mysqli;
 	public function __construct() {
-		$config = Config::getConfig('db');   	
+		$config = Config::getConfig();   	
 		$host = $config['DB_HOST'];
 		$user = $config['DB_USER'];
 		$pass = $config['DB_PASS'];

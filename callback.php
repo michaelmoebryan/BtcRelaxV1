@@ -5,8 +5,6 @@ namespace BtcRelax;
 use \BtcRelax\Core;
 use \BtcRelax\Config;
 use \BtcRelax\DAO;
-use \BtcRelax\Flash;
-use \BtcRelax\Utils;
 
 require('lib/core.inc');
 	
@@ -28,7 +26,7 @@ $signValid = $bitid->isMessageSignatureValidSafe(@$variables['address'], @$varia
 $nonce = $bitid->extractNonce($variables['uri']);
 
 
-$config = Config::getConfig('BitId');  
+$config = Config::getConfig();  
 $vServerUrl = $config['SERVER_URL'];
 
 if(($signValid != false) && $dao->checkNonce($nonce) && ($bitid->buildURI($vServerUrl . 'callback.php', $nonce) === $variables['uri'])) {

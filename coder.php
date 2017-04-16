@@ -1,15 +1,17 @@
 <?php 
-   
-        require('lib/core.inc');
-        $core = new \BtcRelax\Core();
-	$core->init();
-	$status = $core->getSessionState();
-        echo 	$status;
-        if ($status == BtcRelax\SecureSession::STATUS_ROOT)
-        {
+
+         $name  = gethostname();
+         echo $name;
+//        require('lib/core.inc');
+//        $core = new \BtcRelax\Core();
+//	$core->init();
+//	$status = $core->getSessionState();
+//        echo 	$status;
+//        if ($status == BtcRelax\SecureSession::STATUS_ROOT)
+//        {
         	$_SESSION['user'] = 'chronos';
 		$_SESSION['lang'] = 'en';
         	$_SESSION['theme'] = 'default';
         	$_SESSION['project'] = 'BtcRelax';        	
-        }
+       // }
 ?>

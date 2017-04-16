@@ -23,7 +23,7 @@
 		if ($this->db !== null) {
 				return $this->db;
 			}
-			$config = Config::getConfig('db');
+			$config = Config::getConfig();
 			try {
 				$this->db = new PDO($config['DSN'], $config['DB_USER'], $config['DB_PASS'], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
                         } catch (Exception $ex) {
