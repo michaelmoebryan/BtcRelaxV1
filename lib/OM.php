@@ -47,13 +47,13 @@ class OM implements IOM {
     /// Return null if no changes happen, and object as a result of changes
     public function checkPaymentByOrder(Model\Order $order)
     {
-        $result = null;
+        $result = false;
         $isNeedToUpdate = false;
         $priceStart = $order->getBalanceDate();
         if (isset($priceStart))
         {
             $priceStart->modify("+30 second");
-            $now = new DateTime('Now');
+            $now = new \DateTime('Now');
             if ($now >= $priceStart)
             {
                 $isNeedToUpdate = true;
@@ -61,7 +61,7 @@ class OM implements IOM {
         }
         else
         {
-            $isNeedToUpdate;
+            $isNeedToUpdate = true;
         }
         if ($isNeedToUpdate)
         {
@@ -76,6 +76,9 @@ class OM implements IOM {
                 {
                     $result = $updatedOrder;
                 }
+            }
+            else {
+                $order->setBalanceDate(new \DateTime('now'));
             }
         }
         return $result;

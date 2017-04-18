@@ -48,6 +48,7 @@ require_once __DIR__.'/logger.php';
                 'BtcRelax\RestResponse' => '/RestResponse.php',
                 'BtcRelax\RestConnection' => '/RestConnection.php',
                 'Geary' => '/external/Geary.php',
+                'BtcRelax\Log' => '/logger.php',
                 'QRcode' => '/classes/QRcode.php'
            ];
     
@@ -64,7 +65,7 @@ require_once __DIR__.'/logger.php';
         
         
 	public function __construct() {    
-            $this->version = '1.1.1.5';
+            $this->version = '1.1.1.6';
             global $cookie_lifetime;
             if(isset($cookie_lifetime) && $cookie_lifetime != "") {
                 ini_set("session.cookie_lifetime", $cookie_lifetime);

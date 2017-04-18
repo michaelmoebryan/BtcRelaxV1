@@ -47,7 +47,7 @@ class Order {
     }
     
     public function getInvoiceBalance() {
-        return $this->pInvoiceBalance;
+        return $this->pInvoiceBalance === null ? 0: $this->pInvoiceBalance;
     }
 
     public function getBalanceDate() {
@@ -185,7 +185,7 @@ class Order {
 
     public function CheckPaymentAddress()
     {
-	$root_url = 'https://blockchain.info/address/';
+	$root_url = 'http://blockchain.info/address/';
         $parameters = 'format=json';
         $response = file_get_contents($root_url . $this->pInvoiceAddress . '?' . $parameters);
         $object = json_decode($response);

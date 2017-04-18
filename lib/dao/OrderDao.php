@@ -56,12 +56,36 @@ final class OrderDao extends \BtcRelax\BaseDao
                         $result = $newOrder;
                 }
             return $result;
-        }
+            }
 	
             /// Need to call DB function 
             public function updateHotBalance(Order $updOrder)
             {
-                //`UpdateHotBalance`(<{pOrderId int}>, <{pBalance decimal(12,8)}>)
+               $result = false;
+               try {
+                    $db = $this->getDb();
+                    $orderId = $updOrder->getIdOrder();
+                    $balance = $updOrder->getInvoiceBalance();
+                    $callQuery = 'select `UpdateHotBalance`(:pOrderId, :pBalance)';
+                    $call = $db->prepare($callQuery);
+                    $call->bindParam(':pOrderId',$orderId,PDO::PARAM_INT);
+                    $call->bindParam(':pBalance',$balance,PDO::PARAM_STR);
+                    $call->execute();
+                    $call->bind_result($Ident);
+                    while ($call->fetch()) {
+                        if ($Ident === 1)
+                          {
+                            $result = $this->findById($orderId);
+                          }
+                    }
+                    $call->close();
+               }
+               catch (PDOException $pe) {
+                        Log::general($pe->getMessage(), Log::WARN ); 
+                        $updOrder->setLastError($pe->getMessage());
+                        $result = $updOrder;
+                }
+             //`UpdateHotBalance`(<{pOrderId int}>, <{pBalance decimal(12,8)}>)
             }
                     
             public function find(OrderSearchCriteria $search = null) 

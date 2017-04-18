@@ -96,8 +96,8 @@
                                 <div class="pagination pagination-centered" >
                                 <h1><label id="labelOrderHeader" class="control-label span4" >Заказ №<b><?php echo($currentOrder->getIdOrder()); ?></b></label></h1>
                                 <label id="labelOrderState" class="control-label span4" style="margin-top:-5px" >Состояние: </b>
-                                <button id="btnOrderRefresh" type="button" class="btn btn-info" onclick="App.checkOrder();">
-                                    <i class="fa fa-refresh fa-spin fa-fw"></i>Ожидание платежа</button>                           
+                                <button id="btnOrderCheck" type="button" class="btn btn-info" onclick="App.checkOrder();">
+                                    <i class="fa fa-refresh fa-fw"></i>Ожидание платежа</button>                           
                                 </label>
 				<h4><label id="labelOrderOwner" class="control-label span4" >Стоимость заказа: <strong><?php echo( $currentOrder->getBTCPrice() ); ?></strong><i class="fa fa-btc"></i></label></h4>
                                 <?php 

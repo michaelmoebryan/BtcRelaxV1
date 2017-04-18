@@ -25,10 +25,18 @@ var App = (function () {
         },
         checkOrder: function ()
         {
+            $('#btnOrderCheck').children('i').addClass('fa-spin');
                   var request = $.getJSON("json.php", {action: "checkOrder"})
                     .done(function( json )
                         {
-                            console.log( "JSON Data: " + json.users[ 3 ].name );                           
+                            $('#btnOrderCheck').children('i').removeClass('fa-spin');
+                            if (json.message == "Ok")
+                            {
+                                if (json.isNeedRefresh == true )
+                                {
+                                    App.refreshPage();
+                                }
+                            }
                         }
                     );
         },

@@ -1,19 +1,5 @@
-"CreateDate";"idIdentity";"IdentTypeCode";"IdentityKey";"EndDate";"idCustomer"
-"2017-02-15 15:27:08";8;"bitid";"12b2M5LDmcAuS2mbq4UbYbejhMMhKEmHEV";"";"12b2M5LDmcAuS2mbq4UbYbejhMMhKEmHEV"
-"2017-04-08 03:43:39";9;"bitid";"1Fk8Q3LWcEaqcfpQp6Zv4jNJwdUMutttmN";"";"1Fk8Q3LWcEaqcfpQp6Zv4jNJwdUMutttmN"
-"2017-02-15 16:21:12";9;"bitid";"1Q85Vo7DeisnsaesbVUuUhpUutmZYoYtWF";"";"1Q85Vo7DeisnsaesbVUuUhpUutmZYoYtWF"
-"2017-02-15 19:56:24";10;"bitid";"19a32DgpqzizaNupTyd5rdPqCQy5LKxD2f";"";"19a32DgpqzizaNupTyd5rdPqCQy5LKxD2f"
-"2017-02-17 10:30:46";12;"bitid";"1K1BqHnzP4P6DVW4NyBbP42vzdB48udVB9";"";"1K1BqHnzP4P6DVW4NyBbP42vzdB48udVB9"
-"2017-02-18 00:26:16";13;"bitid";"1LZJcA84QCuZFUMiR1S6grxLXeAaHDkwt8";"";"1LZJcA84QCuZFUMiR1S6grxLXeAaHDkwt8"
-"2017-02-22 11:38:31";14;"bitid";"1718hh68J9naTaLALoacUvb67FjNmu5f6o";"";"1718hh68J9naTaLALoacUvb67FjNmu5f6o"
-"2017-02-25 09:39:03";17;"bitid";"17KGyt4wxUfYWyPWidxeoTsDWaaModjZQ8";"";"17KGyt4wxUfYWyPWidxeoTsDWaaModjZQ8"
-"2017-02-25 22:21:56";18;"bitid";"16kn31u215fV4buzY3AdGErRJ99N2mRjWf";"";"16kn31u215fV4buzY3AdGErRJ99N2mRjWf"
-"2017-03-01 14:53:33";19;"bitid";"1Ki8P4Zhh2fMmWLLuM8Kt41R5FYUNaFHbU";"";"1Ki8P4Zhh2fMmWLLuM8Kt41R5FYUNaFHbU"
-"2017-03-11 21:29:08";20;"bitid";"18akCAsBttLAfgZwS7fLNhvvfZLig1vDXM";"";"18akCAsBttLAfgZwS7fLNhvvfZLig1vDXM"
-"2017-03-15 05:07:59";21;"bitid";"1KYzowDyengZdHT3GdeJEQu8gi4bkYpdT8";"";"1KYzowDyengZdHT3GdeJEQu8gi4bkYpdT8"
-"2017-03-19 14:24:23";22;"bitid";"17536rKSBK59Yb19tNe3H8vPtF7CHTGWiA";"";"17536rKSBK59Yb19tNe3H8vPtF7CHTGWiA"
-"2017-04-03 11:53:12";23;"bitid";"1MrA2UPCARVV8yS4i4qjWByBSE5BcQjDcG";"";"1MrA2UPCARVV8yS4i4qjWByBSE5BcQjDcG"
-"2017-04-05 10:17:24";24;"bitid";"1BuwBvM36D6B556dMNaxDieq9RsTcynQuY";"";"1BuwBvM36D6B556dMNaxDieq9RsTcynQuY"
-"2017-04-06 15:25:18";25;"bitid";"1iQmohG2nBLWX89F62uz6EnJ4NMMng6nw";"";"1iQmohG2nBLWX89F62uz6EnJ4NMMng6nw"
-"2017-04-07 09:13:40";26;"bitid";"1A7Mt3FAXTNuHipVoQSGqeTdurVVbkchNa";"";"1A7Mt3FAXTNuHipVoQSGqeTdurVVbkchNa"
-"2017-04-07 11:48:12";27;"bitid";"1M8NMouAMcibMAyKudvo5fxbmenz7qv42z";"";"1M8NMouAMcibMAyKudvo5fxbmenz7qv42z"
+CreateDate,idIdentity,IdentTypeCode,IdentityKey,EndDate,idCustomer
+"2017-03-30 20:48:09",9,bitid,1Fk8Q3LWcEaqcfpQp6Zv4jNJwdUMutttmN,NULL,1Fk8Q3LWcEaqcfpQp6Zv4jNJwdUMutttmN
+"2017-03-31 00:46:23",10,bitid,1Hsp3eAsemWtFswCCYH87mGkNQ63Xc7nwV,NULL,1Hsp3eAsemWtFswCCYH87mGkNQ63Xc7nwV
+"2017-04-01 06:34:27",11,bitid,12ttafpPn5xC2PUZSvNaXM7rZr7ZoJb9pp,NULL,12ttafpPn5xC2PUZSvNaXM7rZr7ZoJb9pp
+"2017-04-07 05:10:37",12,bitid,17LCUJoDdAHUPijDogaXhoLiGfzknZ63HY,NULL,17LCUJoDdAHUPijDogaXhoLiGfzknZ63HY
