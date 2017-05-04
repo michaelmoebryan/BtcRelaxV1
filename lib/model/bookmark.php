@@ -13,7 +13,7 @@ class Bookmark {
     const STATUS_LOST = "Lost";
     const STATUS_PREORDERED = "PreOrdered";
 
-    public $pIdBookmark = null;
+    private $pIdBookmark;
     private $pCreateDate;
     private $pIdOrder;
     private $pQuantity;
@@ -30,6 +30,7 @@ class Bookmark {
     private $pState = self::STATUS_PREPARING;
     private $pIdDroper;
     private $pTargetAddress;
+    private $pBookmarkHash;
     
     public function __construct() {
         $this->pState = self::STATUS_PREPARING;
@@ -43,8 +44,16 @@ class Bookmark {
         $this->pTargetAddress = $pTargetAddress;
     }
 
-    
-    function getIdBookmark() {
+    public function getBookmarkHash() {
+        return $this->pBookmarkHash;
+    }
+
+    function setBookmarkHash($pBookmarkHash) {
+        $this->pBookmarkHash = $pBookmarkHash;
+    }
+
+        
+    public function getIdBookmark() {
         return $this->pIdBookmark;
     }
 
@@ -204,7 +213,7 @@ class Bookmark {
           <li class="list-group-item list-group-item-info"><p>' . $lAdverTitle . '</p><p><span class="badge">' .
           $lTitle . '</span></p></li><li class="list-group-item list-group-item-warning ">~' . $lLocalPrice .
           ' UAH<button type="submit" name="getBookmark" value="' . $this->pIdBookmark . '"   class="btn btn-danger btn-xs pull-right">' . $lLink . '</button></li></ul></div>'; */
-            $result = sprintf("<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3\">
+        $result = sprintf("<div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3\">
 							<form id=\"frmBookmarkId%s\" method=\"post\" >
 								<ul class=\"list-group storefronItem\">
 									<li class=\"list-group-item list-group-item-info\">
@@ -212,11 +221,12 @@ class Bookmark {
 										<p><span class=\"badge\">%s</span></p>
 									</li>
 									<li class=\"list-group-item list-group-item-warning \">~%s UAH
-										<button type=\"submit\" name=\"getBookmark\" value=\"%s\"   class=\"btn btn-danger btn-xs pull-right\">%s</button>
+									<input type=\"hidden\"  />
+                                                                        <button type=\"submit\" name=\"getBookmark\" value=\"%s\"   class=\"btn btn-danger btn-xs pull-right\">%s</button>
 									</li>
 								</ul>
 							</form>
-							</div>", $this->pIdBookmark, $lAdverTitle, $lTitle, $lLocalPrice, $this->pIdBookmark, $lLink);
+							</div>", $this->getBookmarkHash(), $lAdverTitle, $lTitle, $lLocalPrice, $this->getIdBookmark(), $lLink);
         return $result;
         
     }
@@ -288,6 +298,67 @@ class Bookmark {
         return $result;
     }
 
+    public function getPrivateForm()
+    {
+        $plang = 'ru';
+        $result = null;
+        switch ($plang) {
+            case 'ru':
+                $lOrderQuantity = 'Заказано:';
+                $lLink = 'Фото';
+                $lLocation = 'Карта';
+                $lCatch = 'Забрал';
+                $lCatchDone = 'Принято';
+                break;
+            default:
+                $lOrderQuantity = 'Замовлено:';
+                $lLink = 'Фото';
+                $lLocation = 'Мапа';
+                $lCatch = 'Забрав';
+                $lCatchDone = 'Прийнято';
+        };
+        if ($this->getState() === Bookmark::STATUS_SALED) {
+            $catchBtn = '
+						  <img src="img/catch_done.png" border="0" width="64" height="64" alt="Catch bookmark done" >
+						  <p>' . $lCatchDone . '</p>';
+        } else {
+            $catchBtn = '<button type="submit" class="pointCatch" align="right" name="setPointCatched" value="'. $this->getIdBookmark() . '" >
+							<img src="img/Catched1.png" border="0" width="64" height="64" alt="Catch bookmark" >
+							<p>' . $lCatch . '</p>                                                      
+						  </button>';
+            };
+        $result = $result .
+                '<div class="pointInfo storefronItem">
+                    <form  id="frmPointInfo" action="#"  method="post">>
+				<table  width="80%" >
+				   <tr>
+					  <td width="60%">
+						 ' . $this->getDescription() . '
+					  </td>
+					  <td>
+						<a  target="_blank" class="pointLocation" href="' . $this->getLocationLink() . '"><img src="img/Google_Maps_Icon.png" border="0" width="64" height="64" alt="Look map" align="right">
+						<p>' . $lLocation . '</p>
+						</a>
+					  </td>
+					  <td>                  
+						<a  target="_blank" class="pointInfoLink" href="' . $this->getLink(). '"><img src="img/Search-Images-icon.png" border="0" width="64" height="64" alt="Look map" align="right">
+							<p>' . $lLink . '</p>
+						</a>
+					  </td>
+					  <td>' . $catchBtn . '</td>
+				   </tr>
+				   <tr>
+					 <td colspan="4">
+					   <p class="pointInfoBottom"><font size="5" color="red">' . $this->getAdvertiseTitle() . '</font></p>  
+					 </td>
+				   </tr>
+				</table>
+
+                    </form>
+                </div>';
+        return $result;
+    }
+    
     public function getLocationLink() {
         if (empty($this->pLocationLink)) {
             if (isset($this->pLatitude) && isset($this->pLongitude)) {

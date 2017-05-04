@@ -293,7 +293,7 @@ class Geary {
             CURLOPT_URL             => $url . $params,
             CURLOPT_RETURNTRANSFER  => TRUE,
             CURLOPT_HTTPHEADER      => $headers,
-            CURLOPT_SSL_VERIFYPEER  => TRUE,
+            CURLOPT_SSL_VERIFYPEER  => FALSE,
             CURLOPT_CONNECTTIMEOUT  => self::CONNECT_TIMEOUT,
             CURLOPT_POST            => ($data['request_method'] === 'POST')
     	);

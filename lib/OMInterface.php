@@ -10,4 +10,6 @@ interface IOM {
     public function getOrdersByUser(\BtcRelax\User $user, $onlyActive = true);
 
     public function tryConfirmOrder(\BtcRelax\Model\Order $order);
+    
+    public function setPointCatched(\BtcRelax\Model\Order $order, $bookmarkId );
 }

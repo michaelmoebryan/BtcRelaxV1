@@ -4,7 +4,12 @@
         
 	class User {
 		private $customer;
-		public function __construct(){}
+		private $xPub;
+                private $InvoicesCount;
+                
+                public function __construct(){
+                    $InvoicesCount = -1;
+                }
                                 
 		public function init($user_id){
 			$custDao=new CustomerDao();
@@ -14,6 +19,27 @@
 			}
 		}
                 
+                function getCustomer()
+                {
+                    return $this->customer;
+                }
+                
+                function getXPub() {
+                    return $this->xPub;
+                }
+
+                function getInvoicesCount() {
+                    return $this->InvoicesCount;
+                }
+
+                function setXPub($xPub) {
+                    $this->xPub = $xPub;
+                }
+
+                function setInvoicesCount($InvoicesCount) {
+                    $this->InvoicesCount = $InvoicesCount;
+                }
+                              
 		public function getUserHash(){
 			$cId=$this->customer->getIdCustomer();
 			$vEnd=substr($cId,-4,4);
@@ -25,9 +51,7 @@
                 public function getCustomerId() {
                     return $this->customer->getIdCustomer();
                 }
-
-
-                                
+              
 		public function RegisterNewUserId($id){
 			$custDao=new CustomerDao();
 			$result=$custDao->registerUserId($id);

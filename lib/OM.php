@@ -1,7 +1,8 @@
 <?php
 namespace BtcRelax;
 use \BtcRelax\RE;
-use BtcRelax\OrderDao;
+use \BtcRelax\OrderDao;
+use BtcRelax\Core;
 
 require 'OMInterface.php';
 
@@ -20,7 +21,7 @@ class OM implements IOM {
         try {
             $bookmark = $order->getBookmark();
             $targetAddress = $bookmark->getTargetAddress();
-            $newInvoiceAddress = $this->getPaymentAddress($targetAddress);
+            $newInvoiceAddress = $this->getPaymentAddress($order);
             $order->setInvoiceAddress($newInvoiceAddress);          
         } catch (Exception $exc) {
             $isError = true;
@@ -67,6 +68,10 @@ class OM implements IOM {
         {
             $oldBalance = $order->getInvoiceBalance();
             $newBalance = $order->CheckPaymentAddress();
+            if (!is_numeric($newBalance))
+            {
+                Log::general("Getting balance wrong result type!".$newBalance , Log::WARN);
+            }
             if ($oldBalance != $newBalance)
             {
                 $order->setInvoiceBalance($newBalance);
@@ -87,20 +92,68 @@ class OM implements IOM {
     public function getOrderById($orderId) {        
     }
     
-    private function getPaymentAddress($targetAddress)
+    public function fillBookmarksByOrder(\BtcRelax\Model\Order $order)
     {
         $result = null;
-        require_once __DIR__ . "/classes/BlockIo.php";
-        $apiKey = "eb79-6015-7777-f428";
-	$version = 2; // API version
-	$pin = "06102010";
-	$block_io = new \BlockIo($apiKey, $pin, $version);
-        $newAddr = $block_io->create_forwarding_address(array('to_address' => $targetAddress));
-        if ($newAddr->status == "success" )
-            {
-                $result = $newAddr->data->forwarding_address; 
-            }
+        $dao = new BookmarkDao();
+        $bookSearchCriteria = new Dao\BookmarkSearchCriteria();
+        $bookSearchCriteria->setOrderId($order->getIdOrder());
+        $bookMarkList = $dao->find($bookSearchCriteria);
+        if (count($bookMarkList)>0)
+        {
+            $result = $order->setBuyedPoints($bookMarkList);
+        }
         return $result;
+    }
+    
+    private function getPaymentAddress(\BtcRelax\Model\Order $order)
+    {
+//        $result = null;
+//        require_once __DIR__ . "/classes/BlockIo.php";
+//        $apiKey = "eb79-6015-7777-f428";
+//	$version = 2; // API version
+//	$pin = "06102010";
+//	$block_io = new \BlockIo($apiKey, $pin, $version);
+//        $newAddr = $block_io->create_forwarding_address(array('to_address' => $targetAddress));
+//        if ($newAddr->status == "success" )
+//            {
+//                $result = $newAddr->data->forwarding_address; 
+//            }
+//        return $result;
+//          $result = null;
+//          require_once __DIR__."/classes/Geary.php";
+//          $gateway_id = '479129bfd293810337fb277b599089104baa5320c5289f44d6b46ebcb413148b';
+//          $gateway_secret = 'RsPexuivx6Eao6W275MtmRjzp9EypbJUj6GS6mpnhLfjroDU4Pn72va8FUtoDnne';
+//          
+//          $price = $order->getBTCPrice();
+//          
+//          $geary = new \Geary($gateway_id,$gateway_secret);
+//          $keychain_id = $geary->get_last_keychain_id();
+//          $new_key = $keychain_id->last_keychain_id + 1;
+//          $newOrder = $geary->create_order($price, $new_key);
+//          $result = $newOrder->address;
+            $result = false;
+            global $core;
+            $am = $core->getAM();
+            $re = $core->getRE();
+            $bookmark = $order->getBookmark();
+            $droperId = $bookmark->getIdDroper();
+            $user = $am->getUserById($droperId);
+            //require_once 'HD.php';
+            $xpub = $user->getXPub();
+            $path = sprintf('0/%d',$user->getInvoicesCount());
+            $hd = new \HD();
+            $hd->set_xpub($xpub);
+            $address = $hd->address_from_xpub($path);
+            Log::general(sprintf("Generated new address:%s", $address), Log::INFO);
+	    $balance = $re->getBallance($address);  
+            if (FALSE !== $balance)
+            {
+                $dao = new CustomerDao();
+                $dao->AddInvoiceAddressToXPub($xpub, $address, $balance );
+                $result = $address;
+            };
+            return $result;
     }
 
     public function getOrdersByUser(\BtcRelax\User $user, $onlyActive=true) {
@@ -137,4 +190,15 @@ class OM implements IOM {
         return $resultMessage;
     }
 
- }
+    public function setPointCatched(Model\Order $order, $bookmarkId) {
+        $dao = new \BtcRelax\BookmarkDao();
+        $orderId = $order->getIdOrder();
+        Log::general(sprintf("Setting point:%d catched by order id:%d", $bookmarkId,$orderId), Log::INFO);
+        $dbResult = $dao->setBookmarkSaled($orderId, $bookmarkId);
+        if ($dbResult !== false)
+        {
+            
+        }
+    }
+
+}

@@ -49,12 +49,12 @@ require_once __DIR__.'/logger.php';
                 'BtcRelax\RestConnection' => '/RestConnection.php',
                 'Geary' => '/external/Geary.php',
                 'BtcRelax\Log' => '/logger.php',
-                'QRcode' => '/classes/QRcode.php'
+                'QRcode' => '/classes/QRcode.php',
+                'HD' => '/HD.php'
            ];
     
         protected $current_session;
         protected $root_user_id;
-        protected $isAllowFreeRegistration;
         protected $host_name;
         protected $config;
         public $am_instance;
@@ -65,7 +65,7 @@ require_once __DIR__.'/logger.php';
         
         
 	public function __construct() {    
-            $this->version = '1.1.1.6';
+            $this->version = '1.2.2.0';
             global $cookie_lifetime;
             if(isset($cookie_lifetime) && $cookie_lifetime != "") {
                 ini_set("session.cookie_lifetime", $cookie_lifetime);
@@ -82,11 +82,16 @@ require_once __DIR__.'/logger.php';
                 try
                 {
                     $this->config = Config::getConfig();     
-                    $this->root_user_id = $this->config['HUB_ROOT']; 
-                    $this->isAllowFreeRegistration = $this->config['IS_FREE_REGISTER'];
-
+                    $root_user_id = $this->config['HUB_ROOT']; 
+                    $isAllowFreeRegistration = $this->config['IS_FREE_REGISTER'];
+                    $themeFile = $this->config['THEME_STYLE'];
+                    $logo = $this->config['LOGO'];
+                    if (!defined('rootUserId')) { define('rootUserId', $root_user_id);}
+                    if (!defined('isAllowFreeRegistration')) { define('isAllowFreeRegistration', $isAllowFreeRegistration);}
+                    if (!defined('themeStyle')) { define('themeStyle', $themeFile);}
+                    if (!defined('logo')) { define('logo', $logo);}                    
                     $this->re_instance = new RE();
-                    $this->am_instance = new AM($this->root_user_id,$this->isAllowFreeRegistration);                
+                    $this->am_instance = new AM();                
                     $this->om_instance = new OM();
 
                     $cur_session = new SecureSession();
@@ -145,29 +150,44 @@ require_once __DIR__.'/logger.php';
             return $this->current_session->getBitid();
 	}    
 
-        public function getSelectedBookmark()
-        {
-            $result = null;
-            $selectedBookmarkId = $this->current_session->getValue('selectedBookmarkId');
-            if ($selectedBookmarkId != null)
-            {
-                $bookmarkDao = new BookmarkDao();
-                $result  = $bookmarkDao->findById($selectedBookmarkId);
-            
-            }
-            return $result;
-        }
+//        public function getSelectedBookmark()
+//        {
+//            $result = null;
+//            $selectedBookmarkId = $this->current_session->getValue('selectedBookmarkId');
+//            if ($selectedBookmarkId != null)
+//            {
+//                $bookmarkDao = new BookmarkDao();
+//                $result  = $bookmarkDao->findById($selectedBookmarkId);
+//            
+//            }
+//            return $result;
+//        }
         
         public function setCurrentOrder(Order $order = null)
         {
             $this->current_session->setValue('currentOrder',$order);
             // Clear selected bookmark if we already have order
-            $this->current_session->clearValue('selectedBookmarkId');             
+            //$this->current_session->clearValue('selectedBookmarkId');             
         }
         
         public function getCurrentOrder()
         {
             $result = $this->current_session->getValue('currentOrder');
+            if ($result instanceof \BtcRelax\Model\Order)
+            {
+                if (is_numeric($result->getIdOrder()))
+                {
+                    $dao = new OrderDao();
+                    $hash = $result->getOrderHash();
+                    $newHash = $dao->getHashByOrderId($result->getIdOrder());
+                    if ($newHash != $hash )
+                    {
+                        $updOrder = $dao->findById($result->getIdOrder());
+                        $this->setCurrentOrder($updOrder);
+                        $result = $updOrder;
+                    }
+                }
+            }
             return $result;
         }
                
@@ -208,9 +228,9 @@ require_once __DIR__.'/logger.php';
 	}
 	
        
-        public function setAuthenticate()
+        public function setAuthenticate(\BtcRelax\User $user = null)
         {
-            $result =  $this->current_session->Authenticate();
+            $result =  $this->current_session->Authenticate($user);
             return $result;
         }
 	
@@ -219,7 +239,7 @@ require_once __DIR__.'/logger.php';
                 $result = SecureSession::STATUS_UNAUTH;
                 if ($this->current_session->hasCustomer()) {
                     $customerId = $this->getCustomer()->getIdCustomer();
-                    if ($customerId === $this->root_user_id) {
+                    if ($customerId === rootUserId) {
                         $result = SecureSession::STATUS_ROOT;
                     } else {
                         $result = SecureSession::STATUS_USER;
@@ -249,7 +269,7 @@ require_once __DIR__.'/logger.php';
                 $result_page = 'guest';
                 break;
             case SecureSession::STATUS_ROOT:
-                $result_page = 'user';       
+                $result_page = 'info';       
                 break;
             default:
                 $result_page = 'main';
@@ -259,8 +279,7 @@ require_once __DIR__.'/logger.php';
 	}
 	 
 	public function run() {
-	$nonce = Utils::tryGetParam('nonce');
-        $getBookmarkVar = Utils::tryGetParam('getBookmark');		
+	$nonce = Utils::tryGetParam('nonce');	
         $extraParams = array();
         if (($nonce !== false) && (!empty($nonce)))
                     {
@@ -271,10 +290,6 @@ require_once __DIR__.'/logger.php';
                             $this->setBitid($addr);
                         }
                     }
-        if (isset($getBookmarkVar) && (is_numeric($getBookmarkVar)))
-        {                    
-                $this->current_session->setValue('selectedBookmarkId',$getBookmarkVar);
-        }
         if (isset($_REQUEST))
         {
             $extraParams = $_REQUEST;
@@ -285,20 +300,25 @@ require_once __DIR__.'/logger.php';
 
 	public function handleException($ex) {
 		$extra = ['message' => $ex->getMessage()];
-		switch ($ex) {
+		Log::general($ex->getMessage());
+                switch ($ex) {
                     case $ex instanceof NotFoundException:
 			header('HTTP/1.0 404 Not Found');
 			$this->runPage('404', $extra);
                         break;
+                    case $ex instanceof \LogicException:
+                        $extra = ['error_message' => $ex->getMessage()];
+                        break;
                     case $ex instanceof SessionExpiredException:
-                        header('Session was expired');
+                        header('HTTP/1.0 440 Session expired');
                         $this->runPage('main',$extra);
+                        $extra = ['error_message' => 'Сессия сдохла, перезайди.'];
+                        break;
                     default:
                         header('HTTP/1.1 500 Internal Server Error');
 			$this->runPage('500', $extra);
                         break;
                 }
- 
 	}
 
 	public function loadClass($name) {
@@ -339,10 +359,13 @@ require_once __DIR__.'/logger.php';
 	}
 
 	private function runPage($page, array $extra = []) {
-		$run = false;
+		Log::general(sprintf('Try to load page:%s',$page), Log::INFO);
+                $run = false;
 		if ($this->hasScript($page)) {
-			$run = true;
-			require $this->getScript($page);
+                        $run = true;
+                        $script = $this->getScript($page); 
+                        Log::general(sprintf('Loading script:%s',$script), Log::INFO);
+			require $script;
 		}
 		if ($this->hasTemplate($page)) {
 			$run = true;

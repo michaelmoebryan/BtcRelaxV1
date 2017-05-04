@@ -13,18 +13,28 @@
         {
             case 'checkOrder':
                 try {
-                    $currentOrder = $core->getCurrentOrder();
-                    if (isset($currentOrder))
-                    {
-                        $om = $core->getOM();
-                        $om->checkPaymentByOrder($currentOrder);
-                        $message["code"] = "0";
-                        $message["message"] = "Checked";
+                        $currentOrder = $core->getCurrentOrder();
+                        if (isset($currentOrder))
+                            {
+                                $om = $core->getOM();
+                                $checkResult = $om->checkPaymentByOrder($currentOrder);
+                                $message["code"] = "0";
+                                $message["message"] = "Ok";
+                                if (FALSE == $checkResult)
+                                {
+                                    $message["isNeedRefresh"] = false;
+                                }
+                                else
+                                {
+                                    $message["isNeedRefresh"] = true;
+                                }
+                                
+                            }
+                    } catch (Exception $ex) {
+                        $message["code"] = "-3";
+                        $message["message"] = "Unable to check order";                    
                     }
-                } catch (Exception $ex) {
-                    $message["code"] = "-3";
-                    $message["message"] = "Unable to check order";                    
-                }
+                break;
             case 'kill':
                 try
                     {

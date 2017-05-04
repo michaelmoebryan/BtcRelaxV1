@@ -29,7 +29,7 @@
         else {    
             $orderState = $currentOrder->getState(); 
             switch ($orderState) { 
-            case 'Created':
+            case \BtcRelax\Model\Order::STATUS_CREATED :
                 ?>
                 <form id="frmConfirmOrder" action="#"  method="post">
                     <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front 
@@ -57,7 +57,7 @@
                             resizable: false,
                             modal: true,
                             show: {
-                                effect: "blind",
+                                effect: "bounce",
                                 duration: 1000
                                 },
                             hide: {
@@ -87,10 +87,8 @@
                     </form>
                <?php
                 break;
-            
-            case 'WaitForPayment':
-                ?>
-                    <form name="setOrder" id="getOrder" action="" method="post" >
+            case BtcRelax\Model\Order::STATUS_WAIT_FOR_PAY : ?>
+                    <form name="setOrder" id="getOrder" action="#" method="post" >
                         <span id="topControl" class="badge badge-success" style="margin:10px">
                             <div class="form-group">
                                 <div class="pagination pagination-centered" >
@@ -99,7 +97,7 @@
                                 <button id="btnOrderCheck" type="button" class="btn btn-info" onclick="App.checkOrder();">
                                     <i class="fa fa-refresh fa-fw"></i>Ожидание платежа</button>                           
                                 </label>
-				<h4><label id="labelOrderOwner" class="control-label span4" >Стоимость заказа: <strong><?php echo( $currentOrder->getBTCPrice() ); ?></strong><i class="fa fa-btc"></i></label></h4>
+                                <h4><label id="labelOrderOwner" class="control-label span4" >Стоимость заказа: <strong><?php echo( $currentOrder->getBTCPrice() ); ?></strong><i class="fa fa-btc"></i></label></h4>
                                 <?php 
                                 $invoice =  sprintf('bitcoin:%s?amount=%s',$currentOrder->getInvoiceAddress(), $currentOrder->getBTCPrice());   
                                 $name = $currentOrder->getInvoiceAddress().'.png';
@@ -110,8 +108,8 @@
                                 }
                                 echo ('<a href="' . $invoice . '" ><img src="img.php?name='.$name.'" class="loginQr w3-image"  /></a>');
                                 echo ('<p><label class="control-label span4">Адресс для оплаты:</label></p>'); 
-                                echo ('<button class="button button2" id="idInvoiceAddress" onclick="copyToClipboard(\''.$currentOrder->getInvoiceAddress().'\')">'.$currentOrder->getInvoiceAddress().'</button>' );  ?>
-                                <h4><label class="control-label span4">Принято:  </label><strong>0</strong><i class="fa fa-btc"></i></h4>               
+                                echo ('<button name="balance" type="submit" value="check" class="button button2" id="idInvoiceAddress" >'.$currentOrder->getInvoiceAddress().'</button>' );  ?>
+                                <h4><label class="control-label span4">Принято:  </label><strong><?php echo $currentOrder->getInvoiceBalance(); ?></strong><i class="fa fa-btc"></i></h4>               
                                 </div>
                             </div>
                         </span>
@@ -119,8 +117,14 @@
                                 
                 <?php
                 break;
+            case BtcRelax\Model\Order::STATUS_PAID :?>
+                <article class="w3-display-topmiddle w3-panel w3-blue w3-round-medium">
+                <header><h1>Заказ оплачен!</h1></header>    
+                <?php echo \BtcRelax\renderGetOwnedOrder($currentOrder); ?>
+                </article>
+                <?php break;
             default: ?>
-                <h3>Order has state: <?php echo $currentOrder->getState() ?> which dont have form!</h3>
+                <h3>Order has state: <?php echo ($orderState); ?> which dont have form!</h3>
                 <?php break;
             }
         }

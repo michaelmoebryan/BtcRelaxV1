@@ -9,5 +9,5 @@ Options -Indexes
 </IfModule>
 #RewriteCond %{HTTP_HOST} ^fastfen\.club$ [OR]
 #RewriteCond %{HTTP_HOST} ^www\.fastfen\.club$
-#RewriteRule ^/?$ "https\:\/\/ua\.bitganj\.website\/index\.html" [R=302,L]
+#RewriteRule ^([a-zA-Z0-9_-]+)$ index.php?page=$1
 

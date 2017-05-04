@@ -8,7 +8,7 @@ body {
   overflow-y: auto ;
 }
 .bgimg {
-  background-image: url("../img/back.jpg"); 
+  background-image: url("../img/backMind.png"); 
   min-height: 100%;  
   background-position: center;
   background-size: cover;

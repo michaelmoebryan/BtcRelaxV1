@@ -1,4 +1,4 @@
-/* global finaly */
+/* global finaly, ROOT */
 
 var App = (function () {
     //our private functions and variables
@@ -6,9 +6,16 @@ var App = (function () {
     var btnPS;
     var vAuthBusy;
     //our public functions and variables
-    var dhxWins, myToolbar;
+    var dhxWins;
+    var myToolbar;
     var wSession;
-    let myInterval;
+    var role = {
+			ROOT: "ROOT",
+			USER: "USER",
+			UNAUTHENTICATED: "UNAUTHENTICATED",
+			BANNED: "BANNED",
+                        GUEST: 'GUEST'
+                    };
 
     return {
         isLoginRun: function ()
@@ -34,7 +41,7 @@ var App = (function () {
                             {
                                 if (json.isNeedRefresh == true )
                                 {
-                                    App.refreshPage();
+                                   $('#getOrder').submit();
                                 }
                             }
                         }
@@ -114,20 +121,31 @@ var App = (function () {
             $(document.getElementById('copobanId')).hide('slow');
         },
         runui: function()
-        {
-            //var vCopoban = document.getElementById('copobanId');
-            //wSession.attachObj('copobanId');
-
-            //this.btnLogo = new dhtmlXWindowsButton();  
+        {         
+            var dhxWins = new dhtmlXWindows();
+            var layoutWin  = dhxWins.createWindow("rootWindow", 20, 20, 600, 400);
+            layoutWin.setSkin(terrace);
+            layoutWin.setText("Core:");
+            //var myLayout = layoutWin.attachLayout("1C");       
+            var myToolbar = layoutWin.attachToolbar(
+                {
+                    icon_path: "img/icons/",
+                    skin: dhx_terrace,
+                    xml:"/toolbarStruct.xml"
+                }
+                ); 
+            //myToolbar.setIconsPath("img/icons/");
+            //myToolbar.loadStruct("/toolbarStruct.xml");
         },
         refreshPage: function()
         {
-                    $.ajax({
-                      success: function(html) {
-                        document.replaceWith($.parseHTML(html));                        
-                      }
-                    });
-                    location.reload();   
+                    //$.ajax({
+                    //  success: function(html) {
+                    //    
+                    //    
+                    //  }
+                    //});
+                    document.location.href="";   
         },
         kill: function()
         {
@@ -167,7 +185,7 @@ var App = (function () {
                 case 'ROOT':
                     $('#idMainButton').addClass('logo_auth').fadeIn('5000');
                     $('#copobanId').addClass('front_shop_panel').slideUp('5000');
-                    $(document.getElementById('copobanId')).show('slow');
+//                    $(document.getElementById('copobanId')).show('slow');
                     break;
                 case 'BANNED':
                     $('#idMainButton').addClass('logo_auth').fadeIn('5000');

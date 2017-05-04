@@ -82,16 +82,6 @@ function userCreateResult(res)
     }
 }
 
-function copyToClipboard(targetAddress)
-{
-	var aux = document.createElement("input");
-	aux.setAttribute("value",targetAddress);
-	document.body.appendChild(aux);
-	aux.select();
-	document.execCommand("copy");
-	document.removeChild(aux);
-}
-
 function saveWinPos(win)
 {
     localStorage.setItem('wLeft', win.left);

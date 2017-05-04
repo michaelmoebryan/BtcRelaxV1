@@ -51,6 +51,13 @@
 			}
 			return $statement;
 		}
+                
+                public function get_numeric($val) { 
+                    if (is_numeric($val)) { 
+                        return $val + 0; 
+                    } 
+                    return 0; 
+                } 
 	 
 		private static function throwDbError(array $errorInfo) {
 			$error_message = 'DB error [' . $errorInfo[0] . ', ' . $errorInfo[1] . ']: ' . $errorInfo[2];
@@ -64,4 +71,6 @@
 		private static function formatBoolean($bool) {
 				return $bool ? 1 : 0;
 		}
+                
+                
 	} 

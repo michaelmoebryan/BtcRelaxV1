@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toolbar>
+    <item id="Settigs" text="Settings"  type="button" img="16/admin.gif"/>
+    <item id="AccessTokens"  text="Access tokens" type="button" img="autopay.gif"/>
+    <item id="Codiad" text="Coding" type="button" img="" />
+</toolbar>

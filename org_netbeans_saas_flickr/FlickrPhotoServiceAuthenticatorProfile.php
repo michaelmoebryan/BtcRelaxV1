@@ -1,0 +1,20 @@
+<?php
+
+class FlickrPhotoServiceAuthenticatorProfile {
+
+    //Specify the api_key here
+    private static $apiKey = "";
+    //Specify the secret here
+    private static $secret = "";
+
+    public static function getApiKey() {
+        return self::$apiKey;
+    }
+
+    public static function getSecret() {
+        return self::$secret;
+    }
+
+}
+
+?>

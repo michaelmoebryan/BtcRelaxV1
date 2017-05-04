@@ -1,6 +1,8 @@
 <?php
 namespace BtcRelax\Model;
 
+use BtcRelax\Log;
+
 class Order {
     
     const STATUS_CREATED = "Created";
@@ -18,7 +20,6 @@ class Order {
     private $pCreateDate;
     private $pEndDate;
     private $pState = self::STATUS_CREATED;
-    private $pSaller;
     private $pBTCPrice;
     private $pPricingDate;
     private $pInvoiceAddress;
@@ -26,9 +27,11 @@ class Order {
     private $pDeliveryMethod = self::DELIVERY_HOTPOINT;
     private $pInvoiceBalance;
     private $pBalanceDate;
+    private $pOrderHash;
     
     /// Variables with session scope
     private $pBookmark;
+    private $pBuyedPoints;
     private $pLastError;
     
     public function __construct($pBTCPrice = null, $pCreator = null, $pBookmark = null) {
@@ -49,7 +52,30 @@ class Order {
     public function getInvoiceBalance() {
         return $this->pInvoiceBalance === null ? 0: $this->pInvoiceBalance;
     }
+    
+    public function getOwnedPointCount()
+    {
+        return count($this->pBuyedPoints);
+    }
+    
+    
+    function getBuyedPoints() {
+        return $this->pBuyedPoints;
+    }
 
+    function setBuyedPoints($pBuyedPoints) {
+        $this->pBuyedPoints = $pBuyedPoints;
+    }
+
+        function getOrderHash() {
+        return $this->pOrderHash;
+    }
+
+    function setOrderHash($pOrderHash) {
+        $this->pOrderHash = $pOrderHash;
+    }
+
+        
     public function getBalanceDate() {
         return $this->pBalanceDate;
     }
@@ -107,20 +133,12 @@ class Order {
         $this->pLastError = $pLastError;
     }
 
-    public function getSaller() {
-        return $this->pSaller;
-    }
-
     public function getBookmark() {
         return $this->pBookmark;
     }
 
     public function setBookmark($pBookmark) {
         $this->pBookmark = $pBookmark;
-    }
-
-    public function setSaller($pSaller) {
-        $this->pSaller = $pSaller;
     }
 
         
@@ -185,11 +203,16 @@ class Order {
 
     public function CheckPaymentAddress()
     {
-	$root_url = 'http://blockchain.info/address/';
-        $parameters = 'format=json';
-        $response = file_get_contents($root_url . $this->pInvoiceAddress . '?' . $parameters);
+        $requestURI = sprintf('http://blockchain.info/address/%s?format=json',$this->pInvoiceAddress);
+        $response = file_get_contents($requestURI);
+        if (FALSE == $response)
+        {
+            Log::general(sprintf('Error while getting ballance by URL:%s', $requestURI ), Log::WARN);
+            return false;            
+        }
         $object = json_decode($response);
         $inBtc = $object->total_received / 100000000;
+        Log::general(sprintf('Received ballance: %s by URL:%s', $inBtc, $requestURI ), Log::INFO);
         return $inBtc;
     }    
 

@@ -9,4 +9,6 @@ interface IAM {
     public function getUserByBitId($userBitId);
     
     public function getUserById($userId);
+    
+    public function loginUserByToken($token);
 }

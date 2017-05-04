@@ -25,6 +25,21 @@ final class SecureSession {
     private $timeout = 3600;
     private $customer = null;
     private $nonce = null;
+    protected $useProxy = false;
+
+    /**
+     * List of trusted proxy IP addresses
+     *
+     * @var array
+     */
+    protected $trustedProxies = array();
+
+    /**
+     * HTTP header to introspect for proxies
+     *
+     * @var string
+     */
+    protected $proxyHeader = 'HTTP_X_FORWARDED_FOR';
 
     public function __constructor() {
     }
@@ -87,29 +102,36 @@ final class SecureSession {
         return $copy;
     }
 
-    public function Authenticate() {
-        $bitid = new BitID();
-        $nonce = $bitid->generateNonce();
-        $this->setNonce($nonce);
-        $config = Config::getConfig();
-        $server_url = $config['SERVER_URL'];
-
-        $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
-        $this->setValue('bitid_uri', $bitid_uri);
-
-        $qr_uri = $bitid->qrCode($bitid_uri);
-        $this->setValue('qr_uri', $qr_uri);
-
-        $ajax_uri = $server_url . 'ajax.php';
-        $this->setValue('ajax_uri', $ajax_uri);
-
-        $user_uri = Utils::createLink('user');
-        $this->setValue('user_uri', $user_uri);
-
-        $dao = new DAO();
-        
-        $dao->insert($nonce, $_SERVER['REMOTE_ADDR']);
-        return array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri );
+    public function Authenticate(\BtcRelax\User $user = null) {
+        $result = false;
+        if (empty($user))
+            {
+                $bitid = new BitID();
+                $nonce = $bitid->generateNonce();
+                $this->setNonce($nonce);
+                $config = Config::getConfig();
+                $server_url = $config['SERVER_URL'];
+                $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
+                $this->setValue('bitid_uri', $bitid_uri);
+                $qr_uri = $bitid->qrCode($bitid_uri);
+                $this->setValue('qr_uri', $qr_uri);
+                $ajax_uri = $server_url . 'ajax.php';
+                $this->setValue('ajax_uri', $ajax_uri);
+                $user_uri = Utils::createLink('user');
+                $this->setValue('user_uri', $user_uri);
+                $dao = new DAO();
+                $remoteIp = $_SERVER['REMOTE_ADDR'];
+                $this->setValue('remote_ip',$remoteIp); 
+                $dao->insert($nonce,$remoteIp);
+                $result = array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri ); 
+            }
+            else
+            {
+                $customer = $user->getCustomer();
+                $this->setCustomer($customer);
+                $result = true;
+            }
+        return $result;
     }
 
     public function hasBitid() {
@@ -235,4 +257,50 @@ final class SecureSession {
     }
 
 
+    public function getIpAddress()
+    {
+        $ip = $this->getIpAddressFromProxy();
+        if (FALSE == $ip) {
+            // direct IP address
+            if (isset($_SERVER['REMOTE_ADDR'])) {
+               $ip = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+            }
+        }
+        return $ip;
+    }
+
+    protected function getIpAddressFromProxy()
+    {
+        if (!$this->useProxy
+            || (isset($_SERVER['REMOTE_ADDR']) && !in_array($_SERVER['REMOTE_ADDR'], $this->trustedProxies))
+        ) {
+            return false;
+        }
+
+        $header = $this->proxyHeader;
+        if (!isset($_SERVER[$header]) || empty($_SERVER[$header])) {
+            return false;
+        }
+
+        // Extract IPs
+        $ips = explode(',', $_SERVER[$header]);
+        // trim, so we can compare against trusted proxies properly
+        $ips = array_map('trim', $ips);
+        // remove trusted proxy IPs
+        $ips = array_diff($ips, $this->trustedProxies);
+
+        // Any left?
+        if (empty($ips)) {
+            return false;
+        }
+
+        // Since we've removed any known, trusted proxy servers, the right-most
+        // address represents the first IP we do not know about -- i.e., we do
+        // not know if it is a proxy server, or a client. As such, we treat it
+        // as the originating IP.
+        // @see http://en.wikipedia.org/wiki/X-Forwarded-For
+        $ip = array_pop($ips);
+        return $ip;
+    }
+    
 }

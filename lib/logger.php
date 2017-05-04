@@ -1,5 +1,4 @@
 <?php
-
 namespace BtcRelax;
 
 require_once __DIR__.'/config/config.php';

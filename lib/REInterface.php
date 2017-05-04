@@ -9,4 +9,5 @@ interface IRE {
    
     public function getBTCPrice($price, $currency);
     
+    public function getBallance($address);
 }

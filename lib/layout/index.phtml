@@ -8,7 +8,7 @@
           "text/css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
           rel="stylesheet" type="text/css">
-    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <link href="css/<?php echo defined('themeStyle')?themeStyle:"styles.css"; ?>" rel="stylesheet" type="text/css">
     <link href="css/show_message.css" rel="stylesheet" type="text/css" >
     <link href="css/jquery-ui.min.css" rel="stylesheet">
     <link href="css/notify.css" rel="stylesheet" type="text/css">
@@ -38,7 +38,7 @@
         <nav>
             <div class="navbar-header">                       
                 <button onclick="btnPush();" id="idMainButton" class="logo" >                            
-                    <img src="/img/ff2_128.gif" />
+                    <img src="<?php echo(logo) ?>" />
                 </button>
                 <?php
                 if (isset($header)) {
@@ -61,7 +61,7 @@
         </div>
         <footer class="wb_footer w3-container" id="footer" role="contentinfo">
            <?php 
-           	include __DIR__.'/footer.php'; 
+                include __DIR__.'/footer.php'; 
             ?>	
         </footer>
     </body>

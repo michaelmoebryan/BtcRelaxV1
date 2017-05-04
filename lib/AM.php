@@ -8,21 +8,16 @@ use PDO;
 require 'AMInterface.php';
 
 class AM implements IAM {
-    protected $root_user_id;
-    protected $isAllowFreeRegistration;
+    protected $rootUserId;
     protected $rootUser;
     
     
-    public function __construct($rootUserId,$isAFR) { 
-        $this->root_user_id = $rootUserId;
-        $this->isAllowFreeRegistration = $isAFR;
-
+    public function __construct() { 
         try {
-  
-            if ($this->root_user_id !== "")
+            if (!empty(rootUserId))
             {    
                 $root_u = new User();
-                $this->rootUser = $root_u->Init($this->root_user_id);
+                $this->rootUser = $root_u->Init(rootUserId);
             }
         } 
         catch (Exception $ex) {
@@ -33,7 +28,7 @@ class AM implements IAM {
     
     public function CreateNewUser($parent, $child) {
         $result = false;
-        if (($parent == null) && ($this->isAllowFreeRegistration))
+        if (($parent == null) && (isAllowFreeRegistration))
         {           
             $n_user = new \BtcRelax\User();
             $result = $n_user->RegisterNewUserId($child);
@@ -47,8 +42,30 @@ class AM implements IAM {
         return $result;
     }
 
-    public function getUserById($userId) {
-        $result = new user();
+    public function getUserById($customerId) {
+        $result = new User();
+        $result->init($customerId);
+        $dao = new CustomerDao();
+        $result->setXPub($dao->GetPubKeyByCustomer($customerId));
+        $invoicesCount = $dao->GetInvoiceAddressCountByXPub($result->getXPub());
+        $result->setInvoicesCount($invoicesCount);        
+        return $result;
+    }
+
+    public function loginUserByToken($token) {
+        $result = false;
+        $dao = new CustomerDao();
+        $customerId = $dao->getUserByToken($token);
+        if (FALSE !== $customerId)
+        {
+            global $core;
+            $user = $this->getUserById($customerId);
+            $result = $core->setAuthenticate($user);
+            if ($result === true)
+            {
+                /// TODO: add used count to $token
+            }
+        }
         return $result;
     }
 

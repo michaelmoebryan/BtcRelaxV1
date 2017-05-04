@@ -1,0 +1,19 @@
+<script>
+//    var myToolbar = new dhtmlXToolbarObject();
+//    myToolbar.addText("info", 15, "Core:<?php echo $version ?>");
+//    var myLayout = new dhtmlXLayoutObject(document.body,"2U"); 
+//    myLayout.cells("a").setWidth(250);
+//    myLayout.cells("a").setText("Files"); 
+//    myLayout.cells("b").hideHeader();
+//    var myToolbar = myLayout.attachToolbar(); 
+    dhtmlxEvent(window,"load",function(){
+        var dhxWins = new dhtmlXWindows();
+        var layoutWin  = dhxWins.createWindow("rootWindow", 20, 20, 600, 400);
+        layoutWin.button("close").disable();
+        layoutWin.setText("Core:<?php echo $version ?>");
+        //var myLayout = layoutWin.attachLayout("1C");       
+        var myToolbar = layoutWin.attachToolbar(); 
+        myToolbar.setIconsPath("img/icons/");
+        myToolbar.loadStruct("/toolbarStruct.xml");
+    });
+</script>

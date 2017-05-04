@@ -33,6 +33,14 @@
         $("#dialog").dialog({
             title: "Уважаемый аноним!",
             resizable: false,
+            show: {
+                effect: "bounce",
+                duration: 5000
+                  },
+            hide: {
+                effect: "explode",
+                duration: 5000
+                    },
             beforeClose: function(event, ui) { 
                    btnPush();
                 },
