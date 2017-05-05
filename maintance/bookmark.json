@@ -1,0 +1,27 @@
+{
+    "Public": [
+        {
+            "Title": "",
+            "RegionCode": "",
+            "Price": [
+                {
+                    "Currency": "UAH",
+                    "Sum": ""
+                }
+            ]
+        }
+    ],
+    "Private": [
+        {
+            "Url": "",
+            "DropDate": "",
+            "DroperId": "",
+            "Location": [
+                {
+                    "Latitude": "",
+                    "Logitude": ""
+                }
+            ]
+        }
+    ]
+}
