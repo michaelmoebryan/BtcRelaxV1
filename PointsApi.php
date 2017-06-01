@@ -8,23 +8,28 @@
   require('lib/core.inc');	
   $core = new \BtcRelax\Core();
   $core->init();
-  //
-  //
-  //
-  // die if SQL statement failed
-
-//if (!$result) {
-//
-//  http_response_code(404);
-//
-//  die(mysqli_error());
-//
-//}
   $rawAction = json_decode($_REQUEST["action"]);
   $tokenId = $_REQUEST["tokenId"];
   $tokenKey = $_REQUEST["tokenKey"];
   $action = $rawAction[0];
   $ActionType = $action->type;
+  if (is_integer($tokenId) && is_string($tokenKey))
+  {
+      
+  }
+  
+  //
+  //
+  //
+  // die if SQL statement failed
+
+  //if (!$result) {
+  //
+  //  http_response_code(404);
+  //
+  //  die(mysqli_error());
+  //
+  //}
   switch ($ActionType)
         {
             case'item_add':

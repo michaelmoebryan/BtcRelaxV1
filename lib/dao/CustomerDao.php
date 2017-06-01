@@ -40,31 +40,38 @@
             return $result;
         }
             
-         public function getUserByToken($vToken)
+         public function getUserByToken(\BtcRelax\Model\token $vToken)
         {
             $result = false;  
                 try {
-                    $db = $this->getDb(); 		 
-                    $callQuery = "CALL `GetCustomerByActiveToken`(:pToken, @pIdCustomer, @pResult)";
-                    $call = $db->prepare($callQuery);
-                    $call->bindParam(':pToken', $vToken, PDO::PARAM_STR);
-                    $call->execute();
-                    // execute the second query to get values from OUT parameter
-                    $select = $db->query("SELECT @pIdCustomer,@pResult");
-                    $result = $select->fetch(PDO::FETCH_ASSOC);
-                    if ($result)
-                        {
-                            $pResultId = $result['@pResult'];
-                            if ($pResultId == 0)
-                            {
-                                $customerId =  $result['@pIdCustomer'];
-                                $result = $customerId;
-                            }
-                        }					
-                } catch (PDOException $pe) {
-                    Log::general($pe->getMessage(), LOG::WARN );
-                    $result = false;	
-                }
+                    $vCustId = $vToken->getIdCustomer();
+                    $resultObject = $this->findById($vCustId);
+                    if (FALSE !== $resultObject)
+                    {
+                        $result = $resultObject;
+                    };
+//                      $db = $this->getDb(); 		 
+//                    $callQuery = "CALL `GetCustomerByActiveToken`(:pToken, @pIdCustomer, @pResult)";
+//                    $call = $db->prepare($callQuery);
+//                    $call->bindParam(':pToken', $vToken, PDO::PARAM_STR);
+//                    $call->execute();
+//                    // execute the second query to get values from OUT parameter
+//                    $select = $db->query("SELECT @pIdCustomer,@pResult");
+//                    $result = $select->fetch(PDO::FETCH_ASSOC);
+//                    if ($result)
+//                        {
+//                            $pResultId = $result['@pResult'];
+//                            if ($pResultId == 0)
+//                            {
+//                                $customerId =  $result['@pIdCustomer'];
+//                                $result = $customerId;
+//                            }
+//                        }					
+                } catch ( Exception $pe) 
+                {
+                  BtcRelax\Log::general($pe->getMessage(), LOG::WARN );
+                  $result = false;	
+               }
             return $result;
         }
         
