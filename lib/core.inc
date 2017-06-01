@@ -57,6 +57,7 @@ require_once __DIR__.'/logger.php';
         protected $root_user_id;
         protected $host_name;
         protected $config;
+        protected $isDebug;
         public $am_instance;
         public $om_instance;
         public $re_instance;
@@ -69,7 +70,12 @@ require_once __DIR__.'/logger.php';
             global $cookie_lifetime;
             if(isset($cookie_lifetime) && $cookie_lifetime != "") {
                 ini_set("session.cookie_lifetime", $cookie_lifetime);
+            };
+            if ($this->isDebug)
+            {
+                file_put_contents("request.txt", file_get_contents("php://input"));
             }
+            
         }
 
 	public function init() {
@@ -82,6 +88,7 @@ require_once __DIR__.'/logger.php';
                 try
                 {
                     $this->config = Config::getConfig();     
+                    $this->isDebug = $this->config['IS_TEST'];
                     $root_user_id = $this->config['HUB_ROOT']; 
                     $isAllowFreeRegistration = $this->config['IS_FREE_REGISTER'];
                     $themeFile = $this->config['THEME_STYLE'];

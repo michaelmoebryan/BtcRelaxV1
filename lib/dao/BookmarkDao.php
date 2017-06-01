@@ -63,7 +63,51 @@
 					return $sql;
 			}
 		
-		
+		public function createNew(\BtcRelax\Model\Bookmark $bookmark)
+                {
+                    $result = false;
+                        try {
+                             $db = $this->getDb();
+                             $callQuery = 'CALL `RegisterNewPoint`(:pIdCustomer, :pLatitude, :pLongitude, :pLink , :pDescription, '
+                                     . ':pRegionTitle,:pPrice,:pAdvertiseTitle,@out_id,@pBookMarkId);';
+                             $call = $db->prepare($callQuery);
+                             $call->bindParam(':pIdCustomer',$bookmark->getIdDroper() ,PDO::PARAM_STR);
+                             $call->bindParam(':pLatitude',$bookmark->getLatitude() ,PDO::PARAM_STR);
+                             $call->bindParam(':pLongitude',$bookmark->getLongitude() ,PDO::PARAM_STR);
+                             $call->bindParam(':pLink',$bookmark->getLink() ,PDO::PARAM_STR);
+                             $call->bindParam(':pDescription',$bookmark->getDescription() ,PDO::PARAM_STR);
+                             $call->bindParam(':pRegionTitle',$bookmark->getRegionTitle() ,PDO::PARAM_STR);
+                             $call->bindParam(':pPrice',$bookmark->getCustomPrice(),PDO::PARAM_STR);
+                             $call->bindParam(':pAdvertiseTitle',$bookmark->getAdvertiseTitle() ,PDO::PARAM_STR);
+                             Log::general(sprintf("'CALL `RegisterNewPoint`(%s, %s, %s, %s , %s, %s,%s,%s,@out_id,@pBookMarkId)", $bookmark->getIdDroper(), $bookmark->getLatitude(),$bookmark->getLongitude(),
+                                     $bookmark->getLink(), $bookmark->getDescription(), $bookmark->getRegionTitle(), $bookmark->getCustomPrice(), $bookmark->getAdvertiseTitle()), Log::DEBUG);
+                             $call->execute();
+                            $select = $db->query("SELECT  @out_id, @pBookMarkId");
+                            $selResult = $select->fetch(PDO::FETCH_ASSOC);
+                             if ($selResult)
+                             {
+                                    $pResultId    = $selResult['@out_id'];
+                                    $pBookMarkId = $selResult['@pBookMarkId'];      
+                                    if ($pResultId == 0)
+                                    {
+                                        $savedPoint = $this->findById($pBookMarkId);
+                                        $result = $savedPoint;
+                                    }
+                                    else
+                                    {
+                                        $errorMsg = sprintf("Error registering order:%s Procedure result:%s", $newOrder , $pResultId);
+                                        $newOrder->setLastError($errorMsg);
+                                        Log::general($errorMsg, Log::WARN ); 
+                                    }
+                             }
+                        }
+                        catch (PDOException $pe) {
+                                 Log::general($pe->getMessage(), Log::ERROR ); 
+                         }
+                     return $result; 
+                    
+                }
+                        
 		public function findById($id) {
 			$row = parent::query(sprintf("SELECT IdBookmark, CreateDate, IdOrder, Quantity, EndDate,"
                                 . "Latitude, Longitude, Link, Description, RegionTitle,  CustomPrice, PriceCurrency , AdvertiseTitle, UnlockDate  ,"

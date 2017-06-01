@@ -34,6 +34,8 @@ class Bookmark {
     
     public function __construct() {
         $this->pState = self::STATUS_PREPARING;
+        $this->pIdBookmark = null;
+        $this->pDescription = "";
     }
     
     public function getTargetAddress() {
@@ -379,9 +381,9 @@ class Bookmark {
         return $this->pQuantity;
     }
 
-    public function setResourceLink($pLink) {
-        $this->pLink = $pLink;
-    }
+    //public function setResourceLink($pLink) {
+    //    $this->pLink = $pLink;
+    //}
 
     public function setDroperId($pDroperId) {
         $this->pIdDroper = $pDroperId;
@@ -405,51 +407,17 @@ class Bookmark {
     }
 
     public function saveToDb() {
-        $result = '<div id="dialog-message" class="modalDialog" style="display: none;">        								
-											<div>
-												<h2>Point need to update!</h2>
-												<button id="closeMessage" class="btn_msg" onclick="CloseMessage();">Ok</button>								        
-												</div>
-											</div>';
-
-
-
-        // Need to insert, else update
-        try {
-            GetDbConnector($dbCon);
-            $query = 'INSERT INTO `Bookmarks` 
-								( `CreateDate`, `Quantity`, `Link`, `Description`, 
-									`RegionTitle`, `RegionTitle_ru`, `LocationLink`, `idDroper`, `Latitude`, `Longitude` ) 
-									VALUES (NOW(), ?, ?, ?, ?,? ,? ,?, ?, ?);';
-            if ($stmt = $dbCon->prepare($query)) {
-                /* Bind parameters. Types: s = string, i = integer, d = double,  b = blob */
-                $curUser = $_SESSION["userCurrent"];
-                $usrMail = $curUser->getId();
-
-
-                $stmt->bind_param('issssssdd', $this->pQuantity, $this->getResourceLink(), $this->getDescription(), $this->pRegionTitle, $this->pRegionTitle_ru, $this->getLocationLink(), $usrMail, $this->pLatitude, $this->pLongitude);
-                $stmt->execute();
-                $this->pIdBookmark = $dbCon->insert_id;
-
-                $result = '<div id="dialog-message" class="modalDialog" style="display: none;">        								
-											<div>
-												<h2>Point added!</h2>
-												<p>New point Id:' . $dbCon->insert_id . '</p>
-												<button id="closeMessage" class="btn_msg" onclick="CloseMessage();">Ok</button>								        
-												</div>
-											</div>';
-            };
-        } catch (Exception $e) {
-            error_log('Error while inserting new bookmark:' . $e->getMessage());
-            $result = '<div id="dialog-message" class="modalDialog" style="display: none;">        								
-											<div>
-												<h2>Point adding error!</h2>
-												<p>Message: ' . $e->getMessage() . '</p>
-												<button id="closeMessage" class="btn_msg" onclick="CloseMessage();">Ok</button>								        
-											</div>
-									 </div>';
-        };
-
+        $result = false;
+        if ($this->pIdBookmark === null)
+        {
+            $dao = \BtcRelax\BookmarkDao();
+            $daoRes = $dao->createNew($this);
+            if ($daoRes instanceof \BtcRelax\Model\Bookmark)
+            {
+                $result = $daoRes;
+            }
+            // Need to insert, else update
+        }
         return ($result);
     }
 
