@@ -50,7 +50,8 @@ require_once __DIR__.'/logger.php';
                 'Geary' => '/external/Geary.php',
                 'BtcRelax\Log' => '/logger.php',
                 'QRcode' => '/classes/QRcode.php',
-                'HD' => '/HD.php'
+                'HD' => '/HD.php',
+                'BtcRelax\mySession' =>'/mySession.class.php'
            ];
     
         protected $current_session;
@@ -66,7 +67,7 @@ require_once __DIR__.'/logger.php';
         
         
 	public function __construct() {    
-            $this->version = '1.2.2.0';
+            $this->version = '1.2.4.0';
             global $cookie_lifetime;
             if(isset($cookie_lifetime) && $cookie_lifetime != "") {
                 ini_set("session.cookie_lifetime", $cookie_lifetime);
@@ -120,12 +121,12 @@ require_once __DIR__.'/logger.php';
             return $this->am_instance;
         }
         
-        public function getOM()
+  public function getOM()
         {
             return $this->om_instance;
         }
         
-        public function getRE()
+  public function getRE()
         {
             return $this->re_instance;
         }

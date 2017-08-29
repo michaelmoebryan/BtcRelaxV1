@@ -89,7 +89,10 @@ class OM implements IOM {
         return $result;
     }
     
-    public function getOrderById($orderId) {        
+    public function getOrderById($orderId) {
+                $dao = new \BtcRelax\OrderDao();
+    		$result=$dao->findById($orderId);
+		return $result;			
     }
     
     public function fillBookmarksByOrder(\BtcRelax\Model\Order $order)

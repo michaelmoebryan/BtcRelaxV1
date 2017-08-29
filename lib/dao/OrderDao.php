@@ -146,7 +146,8 @@ final class OrderDao extends \BtcRelax\BaseDao
 			}
 		
             public function findById($id) {
-		$row = parent::query(sprintf("SELECT idOrder, CreateDate, EndDate, OrderState,  BTCPrice, PricingDate, InvoiceAddress, idCreator, "
+		            $result=false;
+							  $row = parent::query(sprintf("SELECT idOrder, CreateDate, EndDate, OrderState,  BTCPrice, PricingDate, InvoiceAddress, idCreator, "
                         . "DeliveryMethod, InvoiceBalance, BalanceDate,OrderHash  FROM vwOrders WHERE IdOrder = '%s' LIMIT 1 ", $id))->fetch();
                 if (!$row) { $result=null;}
                 else

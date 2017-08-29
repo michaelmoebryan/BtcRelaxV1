@@ -14,18 +14,24 @@ body {
   background-size: cover;
 }
 
-@media (max-width: 768px)  
-{
+@media (max-width: 768px){
 	#topControl
 	{
 		white-space: normal;
 	}
-}
+	
+	.logo_auth img
+    {
+       width: 25%;
+       height: 25%;
+    }
 
-.loginQr
-{
-    width: 250px;
-    height: 250px;
+    .loginQr
+    {
+        width: 250px;
+        height: 250px;
+    }
+
 }
 
 @media (min-width: 768px) {
@@ -34,6 +40,14 @@ body {
 		   width: 300px;
 		   height: 300px; 
 		}
+		
+	
+    .logo_auth img
+        {
+            width: 75%;
+            height: 75%;
+        }
+
 }
 	
 .starter-template 
@@ -109,15 +123,6 @@ body {
 .logo_unauth img:hover
 {
    
-}
-
-
-
-
-.logo_auth img
-{
-    width: 75%;
-    height: 75%;
 }
 
 .logo_auth img:hover

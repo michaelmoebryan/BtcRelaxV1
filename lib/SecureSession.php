@@ -1,5 +1,6 @@
 <?php
 
+
 namespace BtcRelax;
 
 use BtcRelax\BitID;
@@ -7,7 +8,9 @@ use BtcRelax\Config;
 use BtcRelax\DAO;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
+use BtcRelax\mySession;
 use Exception;
+
 
 
 final class SecureSession {
@@ -25,6 +28,7 @@ final class SecureSession {
     private $timeout = 3600;
     private $customer = null;
     private $nonce = null;
+	  protected $dbsession = null;
     protected $useProxy = false;
 
     /**
@@ -61,7 +65,8 @@ final class SecureSession {
     
 
     private function startSession() {
-        session_start();
+        include("mySession.conf.php");
+        $this->dbsession = mySession::getIstance($_MYSESSION_CONF);
         if (isset($_SESSION['last_active']) == false) {
             $_SESSION['start_time'] = time();
         }
@@ -199,7 +204,8 @@ final class SecureSession {
     
     public function clearValue($session)
     {
-        unset($_SESSION[$session]);
+        $this->dbsession->delete($session); 
+			  unset($_SESSION[$session]);
     }
 
     public function killSession() {

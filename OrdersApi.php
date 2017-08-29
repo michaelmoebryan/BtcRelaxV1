@@ -31,29 +31,33 @@
   //}
   switch ($ActionType)
         {
-            case'GetPointState':
-
-                $dao = new \BtcRelax\BookmarkDao();
-                $v_bookmark_id =  intval($action->bookmarkId);
-                $daoRes = $dao->findById($v_bookmark_id);
-                if ($daoRes instanceof \BtcRelax\Model\Bookmark)
+            case'GetOrderById':
+                $vOm = $core->getOM();
+                $vOrderId =  intval($action->OrderId);
+                if ($vOrderId>0)
                 {
-                    $message["code"] = 0;
-                    $vState = $daoRes->getState();
-                    $message["serverState"] =$vState;
-                    if (($vState == Model\Bookmark::STATUS_PREORDERED) || ($vState == Model\Bookmark::STATUS_LOST) || ($vState == Model\Bookmark::STATUS_SALED  ))
-                    {
-                        $vOrder = $daoRes->getIdOrder();
-                        $message["OrderId"] = $vOrder;                        
-                    };
+                    $vOrder = $vOm->getOrderById($vOrderId);
+                    if ($vOrder instanceof \BtcRelax\Model\Order)
+                            {
+                                $message["code"] = 0;
+                                $vState = $vOrder->getState();
+                                $vInvoiceAddress = $vOrder->getInvoiceAddress();
+                                $message["serverState"] =$vState;
+                                $message["invoiceAddress"] =$vInvoiceAddress;
+                            }
+                            else
+                            {
+                                $message["code"] = -1;
+                                $message["Message"] = array("Description",sprintf("Order id:%s not found" , $v_bookmark_id) );                   
+                            };
+
                 }
                 else
                 {
-                    $message["code"] = -1;
-                    $message["Message"] = array("Description, ",sprintf("Bookmark id: %s not found" , $v_bookmark_id) );                   
-                };
+                                $message["code"] = -2;
+                                $message["Message"] = array("Description",sprintf("Incorrect parameter OrderId:" , $vOrderId));                                                       };
                 break;
-            case'AddPoint':
+            case'GetOrdersList':
                 $new = new \BtcRelax\Model\Bookmark();
                 $new->setLocation($action->inf->lat, $action->inf->lng);
                 $new->setRegionTitle($action->inf->region);
@@ -77,7 +81,7 @@
                 break;
             default:
                 $message["code"] = 0;
-                $message["ActionTypes"] = array("AddPoint","GetVersion");
+                $message["ActionTypes"] = array("GetOrderById","GetOrdersList");
                 break;
         };
   

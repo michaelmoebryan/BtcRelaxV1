@@ -13,7 +13,6 @@
         {
             case 'checkOrder':
                 try {
-                
                         $currentOrder = $core->getCurrentOrder();
                         if (isset($currentOrder))
                             {
