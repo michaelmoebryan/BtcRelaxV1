@@ -6,9 +6,9 @@ namespace BtcRelax;
 use BtcRelax\BitID;
 use BtcRelax\Config;
 use BtcRelax\DAO;
+use BtcRelax\mySession;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
-use BtcRelax\mySession;
 use Exception;
 
 
@@ -28,21 +28,9 @@ final class SecureSession {
     private $timeout = 3600;
     private $customer = null;
     private $nonce = null;
-	  protected $dbsession = null;
+    protected $dbsession = null;
     protected $useProxy = false;
-
-    /**
-     * List of trusted proxy IP addresses
-     *
-     * @var array
-     */
     protected $trustedProxies = array();
-
-    /**
-     * HTTP header to introspect for proxies
-     *
-     * @var string
-     */
     protected $proxyHeader = 'HTTP_X_FORWARDED_FOR';
 
     public function __constructor() {
@@ -107,7 +95,7 @@ final class SecureSession {
         return $copy;
     }
 
-    public function Authenticate(\BtcRelax\User $user = null) {
+    public function Authenticate(User $user = null) {
         $result = false;
         if (empty($user))
             {
@@ -128,7 +116,8 @@ final class SecureSession {
                 $remoteIp = $_SERVER['REMOTE_ADDR'];
                 $this->setValue('remote_ip',$remoteIp); 
                 $dao->insert($nonce,$remoteIp);
-                $result = array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri ); 
+                $vRefreshInterval = $config['AUTH_REFRESH_INTERVAL'];
+                $result = array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri , 'refresh_interval' => $vRefreshInterval); 
             }
             else
             {

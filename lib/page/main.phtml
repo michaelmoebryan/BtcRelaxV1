@@ -37,7 +37,7 @@
                                 };
                                 r.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');                              
                                 r.send("nonce=<?php echo $_SESSION['nonce']; ?>")
-                            }, 30000);
+                            }, <?php echo $authParams['refresh_interval']; ?>);
                         });
 
 

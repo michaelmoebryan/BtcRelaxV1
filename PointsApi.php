@@ -31,8 +31,38 @@
   //}
   switch ($ActionType)
         {
+            case'ActivatePoint':
+                $dao = new \BtcRelax\BookmarkDao();
+                $v_bookmark_id =  intval($action->bookmarkId);
+                $daoRes = $dao->findById($v_bookmark_id);
+                if ($daoRes instanceof \BtcRelax\Model\Bookmark)
+                {
+                    $message["code"] = 0;
+                    $vOpResult = $daoRes->setPointStateById(Model\Bookmark::STATUS_PUBLISHED);
+                    $message["operationResult"] =$vOpResult;
+                }
+                else
+                {
+                    $message["code"] = -1;
+                    $message["Message"] = array("Description, ",sprintf("Bookmark id: %s not found" , $v_bookmark_id) );                   
+                };
+            case'DisactivatePoint':
+                $dao = new \BtcRelax\BookmarkDao();
+                $v_bookmark_id =  intval($action->bookmarkId);
+                $daoRes = $dao->findById($v_bookmark_id);
+                if ($daoRes instanceof \BtcRelax\Model\Bookmark)
+                {
+                    $message["code"] = 0;
+                    $vOpResult = $daoRes->setPointStateById(Model\Bookmark::STATUS_PREPARING);
+                    $message["operationResult"] =$vOpResult;
+                }
+                else
+                {
+                    $message["code"] = -1;
+                    $message["Message"] = array("Description, ",sprintf("Bookmark id: %s not found" , $v_bookmark_id) );                   
+                };
+                break;                           
             case'GetPointState':
-
                 $dao = new \BtcRelax\BookmarkDao();
                 $v_bookmark_id =  intval($action->bookmarkId);
                 $daoRes = $dao->findById($v_bookmark_id);
@@ -77,7 +107,7 @@
                 break;
             default:
                 $message["code"] = 0;
-                $message["ActionTypes"] = array("AddPoint","GetVersion");
+                $message["ActionTypes"] = array("AddPoint","GetVersion","ActivatePoint","DisactivatePoint");
                 break;
         };
   

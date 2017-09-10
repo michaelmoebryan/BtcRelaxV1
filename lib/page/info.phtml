@@ -11,9 +11,23 @@
         var layoutWin  = dhxWins.createWindow("rootWindow", 20, 20, 600, 400);
         layoutWin.button("close").disable();
         layoutWin.setText("Core:<?php echo $version ?>");
-        //var myLayout = layoutWin.attachLayout("1C");       
+        var myLayout = layoutWin.attachLayout("2U");       
+        myLayout.cells("a").setText("Sessins");
+        var sessionsGrid = myLayout.cells("a").attachGrid();
+        sessionsGrid.setHeader("SessionId,Expires");
+        sessionsGrid.setInitWidths("250,*");   
+        sessionsGrid.setColumnIds("sid,expires");
+        sessionsGrid.setColAlign("left,left");     //sets the alignment of columns
+        sessionsGrid.setColTypes("ro,ro");               //sets the types of columns
+        sessionsGrid.setColSorting("str,str");
+        sessionsGrid.init();
+        sessionsGrid.load("data/contacts.php");   
+        myLayout.cells("b").setText("Sessions variables");
+        var menu = layoutWin.attachMenu();
+        menu.setIconsPath("img/icons/");
+        menu.loadStruct("data/menu.xml");
         var myToolbar = layoutWin.attachToolbar(); 
         myToolbar.setIconsPath("img/icons/");
-        myToolbar.loadStruct("/toolbarStruct.xml");
+        myToolbar.loadStruct("data/toolbarStruct.xml");
     });
 </script>

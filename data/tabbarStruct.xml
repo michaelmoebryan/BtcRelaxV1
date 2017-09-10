@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<tabbar>
+    <row>
+        <tab id="b1" active="1">Sessions
+			<content>
+                        </content>
+        </tab>
+        <tab id="b2">Users
+            <content>
+            </content>
+        </tab>
+        <tab id="b3">About</tab>
+    </row>
+</tabbar>

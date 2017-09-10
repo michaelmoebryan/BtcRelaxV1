@@ -7,6 +7,7 @@
   require('lib/core.inc');	
   $core = new \BtcRelax\Core();
   $core->init();
+  
   $action = json_decode(filter_input( INPUT_GET , 'action'));
   $tokenId = \intval(filter_input( INPUT_GET , 'tokenId'));
   $tokenKey = filter_input( INPUT_GET , 'tokenKey');
@@ -48,7 +49,7 @@
                             else
                             {
                                 $message["code"] = -1;
-                                $message["Message"] = array("Description",sprintf("Order id:%s not found" , $v_bookmark_id) );                   
+                                $message["Message"] = array("Description",sprintf("Order id:%s not found" , $vOrderId) );                   
                             };
 
                 }

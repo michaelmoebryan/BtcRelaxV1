@@ -30,12 +30,12 @@ class DAO {
 	
 	public function insert($nonce, $ip) {
 		$this->deleteIP($ip);
-		return $this->_mysqli->query(sprintf("INSERT INTO tbl_nonces (`s_ip`, `dt_datetime`, `s_nonce`) VALUES ('%s', '%s', '%s')", $this->_mysqli->real_escape_string($ip), date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($nonce)));
+		return $this->_mysqli->query(sprintf("INSERT INTO SessionNonces (`s_ip`, `dt_datetime`, `s_nonce`) VALUES ('%s', '%s', '%s')", $this->_mysqli->real_escape_string($ip), date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($nonce)));
 	}
 
 	public function audit($ip, $addr, $desc)
 	{
-		return $this->_mysqli->query(sprintf("INSERT INTO tbl_auth_log (`s_datetime`, `s_ip`, `s_address` , `s_description`) VALUES ('%s', '%s', '%s', '%s')", date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($ip), $this->_mysqli->real_escape_string($addr), $this->_mysqli->real_escape_string($desc)));       
+		return $this->_mysqli->query(sprintf("INSERT INTO SessionAuthLog (`s_datetime`, `s_ip`, `s_address` , `s_description`) VALUES ('%s', '%s', '%s', '%s')", date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($ip), $this->_mysqli->real_escape_string($addr), $this->_mysqli->real_escape_string($desc)));       
 	}    
 	
 	/**
@@ -46,7 +46,7 @@ class DAO {
 	 * @return bool|mysqli_result
 	 */
 	public function update($nonce, $address) {
-		return $this->_mysqli->query(sprintf("UPDATE tbl_nonces SET s_address = '%s' WHERE s_nonce = '%s' ", $this->_mysqli->real_escape_string($address), $this->_mysqli->real_escape_string($nonce)));
+		return $this->_mysqli->query(sprintf("UPDATE SessionNonces SET s_address = '%s' WHERE s_nonce = '%s' ", $this->_mysqli->real_escape_string($address), $this->_mysqli->real_escape_string($nonce)));
 	}
 
 	/**
@@ -56,7 +56,7 @@ class DAO {
 	 * @return bool|mysqli_result
 	 */
 	public function delete($nonce) {
-		return $this->_mysqli->query(sprintf("DELETE FROM tbl_nonces WHERE s_nonce = '%s' ", $this->_mysqli->real_escape_string($nonce)));
+		return $this->_mysqli->query(sprintf("DELETE FROM SessionNonces WHERE s_nonce = '%s' ", $this->_mysqli->real_escape_string($nonce)));
 	}
 
 	/**
@@ -66,7 +66,7 @@ class DAO {
 	 * @return bool|mysqli_result
 	 */
 	public function deleteIP($ip) {
-		return $this->_mysqli->query(sprintf("DELETE FROM tbl_nonces WHERE s_ip = '%s' ", $this->_mysqli->real_escape_string($ip)));
+		return $this->_mysqli->query(sprintf("DELETE FROM SessionNonces WHERE s_ip = '%s' ", $this->_mysqli->real_escape_string($ip)));
 	}
 
 	/**
@@ -77,7 +77,7 @@ class DAO {
 	 * @return bool
 	 */
 	public function address($nonce, $ip) {
-		$result = $this->_mysqli->query(sprintf("SELECT * FROM tbl_nonces WHERE s_nonce = '%s' AND s_ip = '%s' LIMIT 1 ", $this->_mysqli->real_escape_string($nonce), $this->_mysqli->real_escape_string($ip)));
+		$result = $this->_mysqli->query(sprintf("SELECT * FROM SessionNonces WHERE s_nonce = '%s' AND s_ip = '%s' LIMIT 1 ", $this->_mysqli->real_escape_string($nonce), $this->_mysqli->real_escape_string($ip)));
 		if($result) {
 			$row = $result->fetch_assoc();
 			if(isset($row['s_address']) && $row['s_address']!='') {
@@ -108,7 +108,7 @@ class DAO {
 	 * @return bool
 	 */
 	public function checkNonce($nonce) {
-		if($this->_mysqli->query(sprintf("SELECT * FROM tbl_nonces WHERE s_nonce = '%s'", $this->_mysqli->real_escape_string($nonce))))
+		if($this->_mysqli->query(sprintf("SELECT * FROM SessionNonces WHERE s_nonce = '%s'", $this->_mysqli->real_escape_string($nonce))))
 			return true;
 		return false;
 	}
@@ -120,7 +120,7 @@ class DAO {
 	 */
 	
 	public function checkNonceAddr($nonce) {
-		$result = $this->_mysqli->query(sprintf("SELECT * FROM tbl_nonces WHERE s_nonce = '%s'", $this->_mysqli->real_escape_string($nonce)));			
+		$result = $this->_mysqli->query(sprintf("SELECT * FROM SessionNonces WHERE s_nonce = '%s'", $this->_mysqli->real_escape_string($nonce)));			
 		if($result) {
 			$row = $result->fetch_assoc();
 			if(isset($row['s_address']) && $row['s_address']!='') {
@@ -137,7 +137,7 @@ class DAO {
 	 * @return bool
 	 */
 	public function ip($nonce) {
-		$result = $this->_mysqli->query(sprintf("SELECT * FROM tbl_nonces WHERE s_nonce = '%s' LIMIT 1 ", $this->_mysqli->real_escape_string($nonce)));
+		$result = $this->_mysqli->query(sprintf("SELECT * FROM SessionNonces WHERE s_nonce = '%s' LIMIT 1 ", $this->_mysqli->real_escape_string($nonce)));
 		if($result) {
 			$row = $result->fetch_assoc();
 			if(isset($row['s_ip'])) {

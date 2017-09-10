@@ -51,7 +51,7 @@ require_once __DIR__.'/logger.php';
                 'BtcRelax\Log' => '/logger.php',
                 'QRcode' => '/classes/QRcode.php',
                 'HD' => '/HD.php',
-                'BtcRelax\mySession' =>'/mySession.class.php'
+                'BtcRelax\DBSession' =>'/Session.class.php'
            ];
     
         protected $current_session;
@@ -59,9 +59,9 @@ require_once __DIR__.'/logger.php';
         protected $host_name;
         protected $config;
         protected $isDebug;
-        public $am_instance;
-        public $om_instance;
-        public $re_instance;
+        public $AMInstance;
+        protected $OMInstace;
+        public $REInstance;
         public $state;
         public $version;
         
@@ -98,9 +98,9 @@ require_once __DIR__.'/logger.php';
                     if (!defined('isAllowFreeRegistration')) { define('isAllowFreeRegistration', $isAllowFreeRegistration);}
                     if (!defined('themeStyle')) { define('themeStyle', $themeFile);}
                     if (!defined('logo')) { define('logo', $logo);}                    
-                    $this->re_instance = new RE();
-                    $this->am_instance = new AM();                
-                    $this->om_instance = new OM();
+                    $this->REInstance = new RE();
+                    $this->AMInstance = new AM();                
+                    $this->OMInstace = new OM();
 
                     $cur_session = new SecureSession();
                     $cur_session->init();
@@ -118,17 +118,22 @@ require_once __DIR__.'/logger.php';
         
 	public function getAM()
         {
-            return $this->am_instance;
+            return $this->AMInstance;
         }
         
-  public function getOM()
+        public function getOM()
         {
-            return $this->om_instance;
+            return $this->OMInstance;
         }
         
-  public function getRE()
+        public function getConfigParam($pParamName)
         {
-            return $this->re_instance;
+            return $this->config[$pParamName];       
+        }
+        
+        public function getRE()
+        {
+            return $this->REInstance;
         }
         
 	public function setBitId($vBitId)
