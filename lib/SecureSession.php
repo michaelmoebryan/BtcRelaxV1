@@ -6,7 +6,7 @@ namespace BtcRelax;
 use BtcRelax\BitID;
 use BtcRelax\Config;
 use BtcRelax\DAO;
-use BtcRelax\mySession;
+use BtcRelax\DbSession;
 use BtcRelax\SessionExpiredException;
 use BtcRelax\Utils;
 use Exception;
@@ -53,8 +53,8 @@ final class SecureSession {
     
 
     private function startSession() {
-        include("mySession.conf.php");
-        $this->dbsession = mySession::getIstance($_MYSESSION_CONF);
+        include("config/JahSession.conf.php");
+        $this->dbsession = DbSession::getIstance($_MYSESSION_CONF);
         if (isset($_SESSION['last_active']) == false) {
             $_SESSION['start_time'] = time();
         }
@@ -99,26 +99,41 @@ final class SecureSession {
         $result = false;
         if (empty($user))
             {
-                $bitid = new BitID();
-                $nonce = $bitid->generateNonce();
-                $this->setNonce($nonce);
+                $vSid = \session_id();
                 $config = Config::getConfig();
                 $server_url = $config['SERVER_URL'];
-                $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
-                $this->setValue('bitid_uri', $bitid_uri);
-                $qr_uri = $bitid->qrCode($bitid_uri);
-                $this->setValue('qr_uri', $qr_uri);
-                $ajax_uri = $server_url . 'ajax.php';
-                $this->setValue('ajax_uri', $ajax_uri);
-                $user_uri = Utils::createLink('user');
-                $this->setValue('user_uri', $user_uri);
-                $dao = new DAO();
-                $remoteIp = $_SERVER['REMOTE_ADDR'];
-                $this->setValue('remote_ip',$remoteIp); 
-                $dao->insert($nonce,$remoteIp);
                 $vRefreshInterval = $config['AUTH_REFRESH_INTERVAL'];
-                $result = array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri , 'refresh_interval' => $vRefreshInterval); 
-            }
+                
+                if ($this->hasNonce())
+                {
+                   $nonce=$this->getNonce();
+                   $bitid_uri = $this->getValue('bitid_uri');
+                   $qr_uri = $this->getValue('qr_uri');
+                   $ajax_uri = $this->getValue('ajax_uri');
+                   $user_uri = $this->getValue('user_uri');
+                   $remoteIp = $this->getValue('remote_ip');
+                }
+                else
+                {
+                 $bitid = new BitID();
+                 $nonce = $bitid->generateNonce();
+                 $this->setNonce($nonce);
+                 $bitid_uri = $bitid->buildURI($server_url . 'callback.php', $nonce);
+                 $this->setValue('bitid_uri', $bitid_uri);
+                 $qr_uri = $bitid->qrCode($bitid_uri);
+                 $this->setValue('qr_uri', $qr_uri);
+                 $ajax_uri = $server_url . 'API/CheckNonce';
+                 $this->setValue('ajax_uri', $ajax_uri);
+                 $user_uri = Utils::createLink('user');
+                 $this->setValue('user_uri', $user_uri);
+                 $dao = new DAO();
+                 $remoteIp = $_SERVER['REMOTE_ADDR'];
+                 $this->setValue('remote_ip',$remoteIp); 
+                 $dao->insert($nonce,$remoteIp, $vSid );
+                };
+                $result = array('bitid_uri' => $bitid_uri, 'qr_uri' => $qr_uri, 'ajax_uri' => $ajax_uri , 'user_uri' => $user_uri , 'refresh_interval' => $vRefreshInterval, 'session_id' => $vSid);                     
+
+        }
             else
             {
                 $customer = $user->getCustomer();

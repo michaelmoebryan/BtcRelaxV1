@@ -14,6 +14,10 @@ require_once __DIR__.'/logger.php';
 	const PAGE_DIR = '/lib/page/';
 	const LAYOUT_DIR = '/lib/layout/';
 
+        public function getVersion() {
+            return $this->version;
+        }   
+        
 	private static $CLASSES = [
 		'BtcRelax\DAO' => '/dao/DAO.php',
 		'BtcRelax\Config' => '/config/config.php',
@@ -26,7 +30,8 @@ require_once __DIR__.'/logger.php';
 		'BtcRelax\OrderDao' => '/dao/OrderDao.php',
                 'BtcRelax\Dao\OrderSearchCriteria' => '/dao/OrderSearchCriteria.php',
                 'BtcRelax\CustomerDao' => '/dao/CustomerDao.php',
-		'BtcRelax\Mapping\BookmarkMapper' => '/mapping/BookmarkMapper.php',
+		'BtcRelax\SessionsDao' => '/dao/SessionsDao.php',
+                'BtcRelax\Mapping\BookmarkMapper' => '/mapping/BookmarkMapper.php',
 		'BtcRelax\Mapping\CustomerMapper' => '/mapping/CustomerMapper.php',
                 'BtcRelax\Mapping\OrderMapper' => '/mapping/OrderMapper.php',
 		'BtcRelax\Model\Bookmark' => '/model/bookmark.php',
@@ -51,7 +56,9 @@ require_once __DIR__.'/logger.php';
                 'BtcRelax\Log' => '/logger.php',
                 'QRcode' => '/classes/QRcode.php',
                 'HD' => '/HD.php',
-                'BtcRelax\DBSession' =>'/Session.class.php'
+                'BtcRelax\Rest' => '/Rest.php',
+                'BtcRelax\API' => '/APIclass.inc',
+                'BtcRelax\DbSession' => '/classes/DbSession.php'
            ];
     
         protected $current_session;
@@ -60,10 +67,11 @@ require_once __DIR__.'/logger.php';
         protected $config;
         protected $isDebug;
         public $AMInstance;
-        protected $OMInstace;
+        public $OMInstance;
         public $REInstance;
+        public $APInstance;
         public $state;
-        public $version;
+        private $version;
         
         
 	public function __construct() {    
@@ -100,8 +108,8 @@ require_once __DIR__.'/logger.php';
                     if (!defined('logo')) { define('logo', $logo);}                    
                     $this->REInstance = new RE();
                     $this->AMInstance = new AM();                
-                    $this->OMInstace = new OM();
-
+                    $this->OMInstance = new OM();
+                    $this->APInstance = new API();
                     $cur_session = new SecureSession();
                     $cur_session->init();
                     $this->current_session = $cur_session;
@@ -113,12 +121,22 @@ require_once __DIR__.'/logger.php';
                 }
         }
         
-
+        public function checkNonceAddress($pNonce)
+        {            
+            $dao = new \BtcRelax\DAO();
+            $result=$dao->checkNonceAddr($pNonce);
+            return $result;
+        }
 
         
 	public function getAM()
         {
             return $this->AMInstance;
+        }
+        
+        public function getAPI()
+        {
+            return $this->APInstance;
         }
         
         public function getOM()
@@ -250,11 +268,13 @@ require_once __DIR__.'/logger.php';
 	
         public function getSessionState()
         {
-                $result = SecureSession::STATUS_UNAUTH;
-                if ($this->current_session->hasCustomer()) {
-                    $customerId = $this->getCustomer()->getIdCustomer();
-                    if ($customerId === rootUserId) {
-                        $result = SecureSession::STATUS_ROOT;
+            $result = SecureSession::STATUS_UNAUTH;
+            if (FALSE!==$this->current_session)
+            {
+                    if ($this->current_session->hasCustomer()) {
+                            $customerId = $this->getCustomer()->getIdCustomer();
+                            if ($customerId === rootUserId) {
+                            $result = SecureSession::STATUS_ROOT;
                     } else {
                         $result = SecureSession::STATUS_USER;
                     }
@@ -263,7 +283,8 @@ require_once __DIR__.'/logger.php';
                         $result = SecureSession::STATUS_GUEST;
                     }
                 }
-                return $result;
+            }
+            return $result;
         }
         
         public function getNonce()
@@ -283,7 +304,7 @@ require_once __DIR__.'/logger.php';
                 $result_page = 'guest';
                 break;
             case SecureSession::STATUS_ROOT:
-                $result_page = 'info';       
+                $result_page = 'user';       
                 break;
             default:
                 $result_page = 'main';

@@ -43,8 +43,10 @@
                                 $message["code"] = 0;
                                 $vState = $vOrder->getState();
                                 $vInvoiceAddress = $vOrder->getInvoiceAddress();
+                                $vInvoiceBallance = $vOrder->getInvoiceBalance();
                                 $message["serverState"] =$vState;
-                                $message["invoiceAddress"] =$vInvoiceAddress;
+                                $message["invoiceAddress"]=$vInvoiceAddress;
+                                $message["invoiceBallance"]=$vInvoiceBallance; 
                             }
                             else
                             {

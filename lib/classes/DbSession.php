@@ -1,9 +1,9 @@
 <?
-
 namespace BtcRelax;
 use \PDO;
 
-class DBSession
+
+class DbSession
 {
     private static $instance;
     public $VARS = array();
@@ -594,6 +594,7 @@ class DBSession
         $this->hijackBlock = ($config["ENABLE_ANTI_HIJACKING"]=='1')?true:false;
         $this->hijackSalt = $config["ANTI_HIJACKING_SALT"];
 
+
         $this->dbConnection();
         $this->readSessionId();
         //check if i have to overwrite php
@@ -626,7 +627,8 @@ class DBSession
 
         
         //echo "<hr>".$this->sessionId."<hr>";
-        if ($this->expiredSession()) $this->destroy();
+        //$this->gc($this->session_max_duration);
+        //if ($this->expiredSession()) $this->destroy();
         //$_REQUEST[$this->_MYSESSION_CONF['SESSION_VAR_NAME']]=$this->sessionId;
 
     }
@@ -755,8 +757,9 @@ class DBSession
      *
      *  @access private
      */
-    function gc($maxlifetime)
+    function gc()
     {
+        \BtcRelax\Log::general("Garbage collector working", \BtcRelax\Log::INFO);
         $this->SQLStatement_DeleteExpiredSession->bindParam('time', time() - $this->session_max_duration, PDO::PARAM_INT);
         if ($this->SQLStatement_DeleteExpiredSession->execute()===FALSE) {
             trigger_error("Somenthing goes wrong with the garbace collector", E_USER_ERROR);

@@ -13,7 +13,7 @@ function doOnUnload()
 function updateSessionState(newstate)
 {
    var sess_id = 0;
-    App.set_state(newstate, sess_id); 
+   App.set_state(newstate, sess_id); 
 }
 
 function btnPush()
@@ -57,17 +57,6 @@ function createNewUser()
 {
     $(document.getElementById('dialog')).parent().hide("slow");
     App.createUsr();
-                            // Need to reload page
-                    // Try in future
-//            $.ajax({
-//                  url: "#",
-//                    context: document.body,
-//                    success: function(s,x){
-//                            $(this).html(s);
-//                        }
-//                    });
-
-              // Perform other work here ...
 }
 
 function userCreateResult(res)

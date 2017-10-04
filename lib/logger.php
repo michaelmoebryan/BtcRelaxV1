@@ -6,8 +6,8 @@ require_once __DIR__.'/config/config.php';
 Class Log {
 
     // 
-    const USER_ERROR_DIR = './logic-errors.log';
-    const GENERAL_ERROR_DIR = './general_errors.log';
+    const USER_ERROR_DIR = './logs/logic-errors.log';
+    const GENERAL_ERROR_DIR = './logs/general_errors.log';
     const FATAL = -1;
     const ERROR = 0;
     const WARN = 1;

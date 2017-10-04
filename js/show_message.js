@@ -10,9 +10,7 @@ function doOnLoad()
 {
 	var xmlhttp = new XMLHttpRequest();
 	var baseUrl = this.location.protocol + "//" + this.location.hostname;
-	var url = baseUrl + "/api/json.php?method=ping";
-	var targetObject = "#copobanid"; 
-		
+        var url
 	 xmlhttp.onreadystatechange=function() {
 	 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 		PingBack(xmlhttp.responseText, targetObject);
@@ -77,7 +75,7 @@ function killSession()
 {
 	$.ajax({
 	  method: "POST",
-	  url: "kill"
+	  url: "API/kill"
 	})
 	  .done(function( ) {
 		window.location.assign(document.baseURI);

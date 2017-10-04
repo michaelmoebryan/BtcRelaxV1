@@ -21,8 +21,8 @@
 			{
 				$this->SiteMap = array
 				  (
-				  array("user",Self::I_PREFIX. "/icons/32/wait.gif"),
-				  array("info",Self::I_PREFIX. "/icons/32/info.gif")
+                                    array("App.showSessionsWindow();",Self::I_PREFIX. "/icons/32/info.gif","Сессии"),
+                                    array("alert('Users');",Self::I_PREFIX. "/icons/32/wait.gif","Пользователи")
 				  );
 			}
 		} 
@@ -33,22 +33,9 @@
 			if (isset($this->SiteMap))
 			{
 				foreach ($this->SiteMap as $pageHead) {				  
-					  if ( $pageHead[0] === $page)
-						  {
-							        ///
-                                    ///
-                                    ///
-                                    ///
-                                    ///
-                                    ///
-                              $result = $result . '<li><a class="active" href="' . Utils::createLink($pageHead[0]) . '"><img src="' . $pageHead[1] . '"></img></a></li>';                               
-                              //$result = $result . '<li><a class="active" href="' . Utils::createLink($pageHead[0]) . '">' . $pageHead[1] . '</a></li>';
-						  }
-						  else
-						  {
-                              $result = $result . '<li><a href="' . Utils::createLink($pageHead[0]) . '"><img src="' . $pageHead[1] . '"></img></a></li>'; 
-						      //$result = $result . '<li><a href="' . Utils::createLink($pageHead[0]) . '">' .$pageHead[1]  . '</a></li>'; 
-						  }               
+
+                                                    $result = $result . '<li><button type="button" class="btn btn-info" onclick="'.$pageHead[0].'"><img src="'.$pageHead[1].'"></img>'.$pageHead[2].'</button></li>';                               
+                                                    //$result = $result . '<li><a class="active" href="' . Utils::createLink($pageHead[0]) . '">' . $pageHead[1] . '</a></li>';        
 				};
 				$result = Self::HEADER_BEGIN . $result  . Self::HEADER_END; 
 		   };                						

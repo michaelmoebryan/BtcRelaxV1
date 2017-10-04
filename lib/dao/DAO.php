@@ -28,11 +28,11 @@ class DAO {
 	
 	 
 	
-	public function insert($nonce, $ip) {
+	public function insert($nonce, $ip, $sid) {
 		$this->deleteIP($ip);
-		return $this->_mysqli->query(sprintf("INSERT INTO SessionNonces (`s_ip`, `dt_datetime`, `s_nonce`) VALUES ('%s', '%s', '%s')", $this->_mysqli->real_escape_string($ip), date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($nonce)));
+		return $this->_mysqli->query(sprintf("INSERT INTO SessionNonces (`s_ip`, `dt_datetime`, `s_nonce`, `sid`) VALUES ('%s', '%s', '%s', '%s')", $this->_mysqli->real_escape_string($ip), date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($nonce),$this->_mysqli->real_escape_string($sid)));
 	}
-
+        
 	public function audit($ip, $addr, $desc)
 	{
 		return $this->_mysqli->query(sprintf("INSERT INTO SessionAuthLog (`s_datetime`, `s_ip`, `s_address` , `s_description`) VALUES ('%s', '%s', '%s', '%s')", date('Y-m-d H:i:s'), $this->_mysqli->real_escape_string($ip), $this->_mysqli->real_escape_string($addr), $this->_mysqli->real_escape_string($desc)));       

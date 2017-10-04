@@ -12,17 +12,19 @@
         layoutWin.button("close").disable();
         layoutWin.setText("Core:<?php echo $version ?>");
         var myLayout = layoutWin.attachLayout("2U");       
-        myLayout.cells("a").setText("Sessins");
+        myLayout.cells("a").setText("Sessions");
         var sessionsGrid = myLayout.cells("a").attachGrid();
         sessionsGrid.setHeader("SessionId,Expires");
-        sessionsGrid.setInitWidths("250,*");   
+        sessionsGrid.setInitWidths("350,350");   
         sessionsGrid.setColumnIds("sid,expires");
         sessionsGrid.setColAlign("left,left");     //sets the alignment of columns
         sessionsGrid.setColTypes("ro,ro");               //sets the types of columns
         sessionsGrid.setColSorting("str,str");
         sessionsGrid.init();
-        sessionsGrid.load("data/contacts.php");   
+        sessionsGrid.load("data/SessionsApi.php");   
         myLayout.cells("b").setText("Sessions variables");
+        var sessionForm = myLayout.cells("b").attachForm();
+        sessionForm.loadStruct("data/form.xml");
         var menu = layoutWin.attachMenu();
         menu.setIconsPath("img/icons/");
         menu.loadStruct("data/menu.xml");

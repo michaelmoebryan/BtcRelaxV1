@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<items>
+    <item type="settings"  inputWidth="220"  position="label-left" labelWidth="70"/>
+    <item type="label"  label="Session variables:"/>
+    <item type="input"  label="BitId"  name="bitid"    offsetLeft="15"/>
+    <item type="input"  label="IP"   name="ip"    offsetLeft="15"/>
+    <item type="button"     value="Submit"   offsetTop="15" offsetLeft="230"/>
+</items>

@@ -17,28 +17,38 @@ class AM implements IAM {
             if (!empty(rootUserId))
             {    
                 $root_u = new User();
-                $this->rootUser = $root_u->Init(rootUserId);
+                $this->rootUser = $root_u->Init(\rootUserId);
             }
-        } 
+        }
+        catch (\LogicException $ex)
+        {
+                $vIsCreatedRoot = $this->createNewUser(null, rootUserId);
+                if (FALSE!=$vIsCreatedRoot)
+                {
+                    throw new Exception('AM create user about error: ' . $ex->getMessage() );
+                }
+        }
         catch (Exception $ex) {
-		throw new Exception('AM init error: ' . $ex->getMessage());
-            };
+                throw new Exception('AM init error: ' . $ex->getMessage());
+        }
     }
     
     
-    public function CreateNewUser($parent, $child) {
+    public function createNewUser($parent, $child) {
         $result = false;
         if (($parent == null) && (isAllowFreeRegistration))
         {           
             $n_user = new \BtcRelax\User();
             $result = $n_user->RegisterNewUserId($child);
             
-        };
+        }
         return $result;
     }
 
     public function getUserByBitId($userBitId) {
-        $result = new user();
+        $dao = new DAO();
+        $idCustomer = $dao->customerByBitId($vBitId);
+        $result = $this->getUserById($idCustomer);
         return $result;
     }
 
@@ -46,9 +56,7 @@ class AM implements IAM {
         $result = new User();
         $result->init($customerId);
         $dao = new CustomerDao();
-        $result->setXPub($dao->GetPubKeyByCustomer($customerId));
-        $invoicesCount = $dao->GetInvoiceAddressCountByXPub($result->getXPub());
-        $result->setInvoicesCount($invoicesCount);        
+        $this->fillUserInfo($result);
         return $result;
     }
 
@@ -67,6 +75,17 @@ class AM implements IAM {
             }
         }
         return $result;
+    }
+    
+    private function fillUserInfo(\BtcRelax\User $pUser)
+    {
+        $dao = new CustomerDao();
+        $vCustId = $pUser->getCustomerId();
+        $vXPub = $pUser->getXPub();
+        $pUser->setXPub($dao->GetPubKeyByCustomer($vCustId));
+        $invoicesCount = $dao->GetInvoiceAddressCountByXPub($vXPub);
+        $pUser->setInvoicesCount($invoicesCount);     
+        return $pUser;
     }
 
 }

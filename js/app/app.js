@@ -4,6 +4,7 @@ var App = (function () {
     //our private functions and variables
     var vSessionId;
     var btnPS;
+    var baseUrl = this.location.protocol + "//" + this.location.hostname;
     var vAuthBusy;
     //our public functions and variables
     var dhxWins;
@@ -24,6 +25,39 @@ var App = (function () {
 
         },
         init: function () {
+
+        },
+        showSessionsWindow: function() {
+                if (this.dhxWins===null)
+                {
+                    var dhxWins = new dhtmlXWindows();
+                    var layoutWin  = dhxWins.createWindow("rootWindow", 20, 20, 600, 400);
+                    layoutWin.setText("Core version:<?php echo $version ?>");
+                    var myLayout = layoutWin.attachLayout("2U");       
+                    myLayout.cells("a").setText("Sessions");
+                    var sessionsGrid = myLayout.cells("a").attachGrid();
+                    sessionsGrid.setHeader("SessionId,Expires");
+                    sessionsGrid.setInitWidths("*,*");   
+                    sessionsGrid.setColumnIds("sid,expires");
+                    sessionsGrid.setColAlign("left,left");     //sets the alignment of columns
+                    sessionsGrid.setColTypes("ro,ro");               //sets the types of columns
+                    sessionsGrid.setColSorting("str,str");
+                    sessionsGrid.init();
+                    sessionsGrid.load("data/SessionsApi.php");   
+                    myLayout.cells("b").setText("Sessions variables");
+                    var sessionForm = myLayout.cells("b").attachForm();
+                    sessionForm.loadStruct("data/form.xml");
+                    var menu = layoutWin.attachMenu();
+                    menu.setIconsPath("img/icons/");
+                    menu.loadStruct("data/menu.xml");
+                    var myToolbar = layoutWin.attachToolbar(); 
+                    myToolbar.setIconsPath("img/icons/");
+                    myToolbar.loadStruct("data/toolbarStruct.xml");                     
+                }
+                else
+                {
+                    this.dhxWins
+                }
 
         },
         createUsr: function()
@@ -60,7 +94,7 @@ var App = (function () {
                             this.showLoginWindow();
                             break;
                         default:
-                            $.get( "json.php", { action: "kill" }, function(){                            
+                            $.get( "API/kill", { action: "kill" }, function(){                            
                                 $('#idMainButton').switchClass("logo_auth", "logo_unauth");
                                 $(document.getElementById('copobanId')).hide('slow');
                                 location.reload(true);
@@ -101,7 +135,7 @@ var App = (function () {
         },
         refresh_state: function ()
         {
-            $.get('json.php?action=ping', function (data, status) {
+            $.get('API/V1', function (data, status) {
                 newState = data.message;
                 oldState = localStorage.getItem("last_state");
                 if (newState !== oldState)

@@ -13,7 +13,8 @@
                                 
 		public function init($user_id){
 			$custDao=new CustomerDao();
-			$this->customer=$custDao->findById($user_id);
+                        /* @var $user_id type */
+                        $this->customer=$custDao->findById($user_id);
 			if($this->customer===null){
 				throw new \LogicException('Critical error! Customer with Id "'.$user_id.'" was not found.');
 			}

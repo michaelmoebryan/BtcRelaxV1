@@ -1,5 +1,4 @@
 <?php
-
 namespace BtcRelax;
 
 use \BtcRelax\Core;
