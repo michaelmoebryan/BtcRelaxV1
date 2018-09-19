@@ -14,6 +14,7 @@ $bitid = new \BtcRelax\BitID();
 $dao = new DAO();
 
 $variables = $_POST;
+$variables2 = $_POST;
 
 $post_data = json_decode(file_get_contents('php://input'), true);
 // SIGNED VIA PHONE WALLET (data is send as payload)
